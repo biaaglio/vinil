@@ -1,0 +1,117 @@
+*{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body{
+    background-color: rgb(21, 21, 21);
+}
+
+main{
+    margin-top: 50px;
+}
+main, ul{
+    display: flex;
+}
+.main-dispo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+.main-dispo ul{
+    list-style: none;
+    gap: 30px;
+    color: rgb(182, 182, 182);
+    font-size: 20px;
+}
+.main-dispo img{
+    height: 50px;
+}
+.button-verm{
+    background-color: rgb(250, 46, 35);
+}
+.button-ama{
+    background-color: rgb(240, 250, 115);
+}
+.button-ama, .button-verm{
+    width: max-content;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 15px;
+    font-size: 20px;
+    gap: 10px;
+}
+
+.box-home{
+    margin: 50px 208px ;
+}
+.box-home h2{
+    background-color: rgb(240, 250, 115);
+    padding: 5px;
+    border-radius: 30px;
+    width: max-content;
+}
+.box-home h1{
+    color: rgb(235, 235, 235);
+    font-size: 50px;
+    margin: -10px 0 0 0
+}
+.box-home p{
+    color: rgb(182, 182, 182);
+    margin: -1px 0 0 0;
+}
+.box-home article{
+    gap: 20px;
+}
+input{
+    background-color: rgb(38, 38, 38);
+    height: 12px;
+    width: 300px;
+    margin: 30px 0 0 -5px;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    color: rgb(182, 182, 182);
+    padding: 20px;
+    background-image: url(img/icons-pesquisar.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: 10px;
+}
+input::placeholder{
+    padding: 25px;
+}
+
+/*  */
+
+.box-novi{
+    background-color: rgb(250, 46, 35);
+    height: 410px;
+    padding: 5px;
+}
+.box-novi article{
+    margin: 0 100px 0 100px;
+}
+.box-novi img{
+    height: 200px;
+    border-radius: 15px;
+}
+.box-album-novi article{    
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin: -30px 0 0 0;
+}
+.box-album-novi h1{
+    margin-top: -1px;
+    font-size: 22px;
+}
+.box-album-novi h2{
+    font-size: 18px;
+}
+.sessao-album{
+    display: flex;
+    justify-content: center;
+    width: max-content;
+
+}
