@@ -1,0 +1,126 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body{
+    background-color: #1A1A1A;
+}
+header{
+    display: flex;
+    width: 98%;
+    justify-content: space-between;
+    margin: auto;
+    align-items: center;
+}
+header ul{
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    
+}
+header a{
+       text-decoration: none;
+       color: #767677;
+}
+header a:hover{
+     color: #7F1E25;
+}
+.logo{
+    width: 150px;
+    height: 70px;
+}
+.opcoes{
+    font-size: 25px;
+    width: 30%;
+    
+}
+.icones img{
+    height: 35px;
+    width: 35px;
+}
+.generos{
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+}
+.generos h1{
+    background-color: #EDF25C;
+    border-radius: 5px;
+    width: 200px;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    font-weight: 500;
+}
+.generos p{
+    font-size: 26px;
+    color: #767677;
+}
+.estilos{
+    margin-top: 15px;
+    display: flex;
+    width: 40%;
+    justify-content: space-around;
+}
+.estilos p{
+    font-size: 22px;
+    border:#767677 1px solid;
+    border-radius: 20px;
+    width: max-content;
+    display: flex;
+    justify-content: center;
+    padding: 3px 14px;
+}
+.marca{
+    background-color: #d50613;
+     border:#d50613 1px solid!important;
+    color: #000000!important;
+}
+.card img{
+width: 120px;
+height: 120px;
+}
+main{
+margin-top: 50px;
+
+    width: 100%;
+}
+section{
+    display: flex;
+    width: 95%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 16px;
+}
+.card{
+    background-color: #262626;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 500px;
+    border-radius: 10%;
+    height: 300px;
+    padding-left: 35px;
+}
+.card h1{
+    color: white;
+}
+.card p{
+    font-size: 20px;
+    color: #767677;
+}
+.card button{
+     background-color: #EDF25C;
+    border-radius: 5px;
+    width: 140px;
+    font-size: 19px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    height: 40px;
+}
