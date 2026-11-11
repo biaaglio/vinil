@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-        <main>
+    <main>
         <article class="main-dispo">
             <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
         </article>
@@ -30,50 +30,101 @@
 
 
     <section class="all-artis">
-        <h2>Gêneros / <a href="">Rock</a></h2>
+        <h2>Gêneros / <a href="../view/generos.html">Rock</a></h2>
 
-        <article id="artis">
+        <article class="cab-secao">
             <h1>Artistas do gênero</h1>
             <hr>
             <button id="passar">></button>
         </article>
 
         <article class="box-artis">
-            <article>
-                <img src="../assets/img/thedoors.jpg" alt="artista">
-                <h3>Nome Artista</h3>
+            <article class="artis-sel">
+                <img src="../assets/img/thedoors.jpg" alt="Pink Floyd">
+                <h3>The Doors</h3>
             </article>
 
             <article>
-                <img src="../assets/img/thedoors.jpg" alt="artista">
-                <h3>Nome Artista</h3>
+                <img src="../assets/img/thedoors.jpg" alt="Led Zeppelin">
+                <h3>Megadeth</h3>
             </article>
 
             <article>
-                <img src="../assets/img/thedoors.jpg" alt="artista">
-                <h3>Nome Artista</h3>
+                <img src="../assets/img/thedoors.jpg" alt="Queen">
+                <h3>Motörhead</h3>
             </article>
 
             <article>
-                <img src="../assets/img/thedoors.jpg" alt="artista">
-                <h3>Nome Artista</h3>
+                <img src="../assets/img/thedoors.jpg" alt="Nirvana">
+                <h3>System of a Down</h3>
+            </article>
+
+            <article>
+                <img src="../assets/img/thedoors.jpg" alt="AC/DC">
+                <h3>Aerosmith</h3>
             </article>
         </article>
 
-        <section>
-            <h1>Nome Artista</h1>
+        <section class="perfil-artis">
             <article>
-                <p>Descrição descrição descrição</p>
-                <button>Favoritar</button>
+                <h1>The Doors</h1>
+                <p>Banda estadunidense, fundada em 1965, em Los Angeles, Califórnia</p>
+                <ul class="chips-artis">
+                    <li class="chip-ama">Rock</li>
+                    <li>9 álbuns</li>
+                </ul>
             </article>
-            <ul>
-                <li>Rock</li>
-                <li>25 álbuns</li>
-            </ul>
+            <button class="button-fav">Favoritar</button>
+        </section>
+
+        <article class="cab-secao">
+            <h1>Álbuns</h1>
+            <p>3 no catálogo</p>
+            <hr>
+            <button class="button-ordenar">Ordenar: ano</button>
+        </article>
+
+        <section class="box-album-art">
+            <a href="../view/visualizar_album.html">
+                <article class="card-album">
+                    <img src="../assets/img/thedoors.jpg" alt="The Wall">
+                    <section class="rodape-album">
+                        <article>
+                            <h3>The Doors</h3>
+                            <p>1967</p>
+                        </article>
+                        <span class="button-seta">↗</span>
+                    </section>
+                </article>
+            </a>
+
+            <a href="../view/visualizar_album.html">
+                <article class="card-album">
+                    <img src="../assets/img/thedoors.jpg" alt="Animals">
+                    <section class="rodape-album">
+                        <article>
+                            <h3>Morrison Hotel</h3>
+                            <p>1970</p>
+                        </article>
+                        <span class="button-seta">↗</span>
+                    </section>
+                </article>
+            </a>
+
+            <a href="../view/visualizar_album.html">
+                <article class="card-album">
+                    <img src="../assets/img/thedoors.jpg" alt="Wish You Were Here">
+                    <section class="rodape-album">
+                        <article>
+                            <h3>L.A Woman</h3>
+                            <p>1971</p>
+                        </article>
+                        <span class="button-seta">↗</span>
+                    </section>
+                </article>
+            </a>
         </section>
     </section>
-
-
 
 </body>
 </html>

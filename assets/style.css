@@ -139,6 +139,7 @@ ul a:hover{
     padding: 1.67vw;
 }
 
+
 /* novidades home */
 .cabecalho-novi{
     display: flex;
@@ -217,8 +218,6 @@ ul a:hover{
     font-size: 1vw;
     margin: 0.67vw 0 0 0;
 }
-
-/* estante */
 .estante{
     display: flex;
     align-items: flex-end;
@@ -247,8 +246,6 @@ ul a:hover{
 .gene-vinil:hover .disco-gene{
     transform: translateY(-6vw);
 }
-
-/* lombada */
 .lombada{
     position: relative;
     z-index: 1;
@@ -276,8 +273,6 @@ ul a:hover{
 .icone-gene{
     width: 1.5vw;
 }
-
-/* cores das lombadas */
 .lomb-cinza{
     background-color: rgb(38, 38, 38);
     border: 0.07vw solid rgb(60, 60, 60);
@@ -414,6 +409,7 @@ ul a:hover{
 .altura-4{ height: 18vw; }
 .altura-5{ height: 19vw; }
 
+
 /* cadastrar album home */
 .box-cad-home{
     display: flex;
@@ -436,8 +432,6 @@ ul a:hover{
 .box-cad-home a{
     text-decoration: none;
 }
-
-/* rodape */
 .rodape{
     display: flex;
     align-items: center;
@@ -536,6 +530,7 @@ ul a:hover{
     color: rgb(235, 235, 235);
 }
 
+
 /* genero */
 .sessao-main{
     display: grid;
@@ -606,6 +601,7 @@ ul a:hover{
     transition: 0.5s ease-in-out;
 }
 
+
 /* login */
 .main-dispo2{
     display: flex;
@@ -660,6 +656,7 @@ ul a:hover{
     margin: 1vw 0 0 9vw;
 }
 
+
 /* recuperar senha */
 .main-dispo2 img{
     align-items: center;
@@ -713,69 +710,211 @@ ul a:hover{
     color: rgb(255, 13, 0);
 }
 
+
 /* artistas */
+/* artistas (substitui o bloco antigo) */
+.main-dispo ul a.ativo{
+    color: rgb(250, 46, 35);
+}
 .all-artis{
-    justify-content: center;
-    margin: 3.33vw 0vw 0 10.33vw;
+    margin: 3.33vw 10vw 3.33vw 10.33vw;
 }
 .all-artis h2{
     color: rgb(120, 120, 120);
     font-weight: normal;
+    font-size: 1vw;
+    margin: 0 0 0.67vw 0;
 }
-.all-artis a{
+.all-artis h2 a{
     color: rgb(250, 46, 35);
     text-decoration: none;
 }
-.all-artis, #artis{
-    align-items: center;
-}
-#artis{
+
+/* cabecalho das secoes (Artistas do genero / Albuns) */
+.cab-secao{
     display: flex;
+    align-items: center;
+    gap: 1.33vw;
+    margin: 0 0 1.33vw 0;
 }
-.all-artis hr{
-    width: 61.33vw;
-    margin: 0.67vw 1.33vw 0 1.33vw;
-    border: 0.07vw dashed;    
-}
-#artis h1{
+.cab-secao h1{
     color: rgb(235, 235, 235);
     font-size: 1.67vw;
 }
-.all-artis button{
+.cab-secao p{
+    color: rgb(120, 120, 120);
+    font-size: 0.93vw;
+}
+.cab-secao hr{
+    flex: 1;
+    height: 0;
+    border: none;
+    border-top: 0.07vw dashed rgb(80, 80, 80);
+}
+#passar{
     background-color: rgb(120, 120, 120);
     border-radius: 6.67vw;
     height: 2vw;
     width: 2vw;
-    align-items: center;
-    margin: 0.67vw 0 0 0;
     border: none;
     color: rgb(235, 235, 235);
+    cursor: pointer;
 }
+.button-ordenar{
+    background-color: transparent;
+    box-shadow: inset 0 0 0 0.07vw rgb(120, 120, 120);
+    color: rgb(182, 182, 182);
+    padding: 0.33vw 1vw;
+    border: none;
+    border-radius: 2vw;
+    font-size: 0.93vw;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+
+/* artistas */
 .box-artis{
     display: flex;
     gap: 3.33vw;
-    margin: 0 1.33vw 0 1.33vw;
-
+    margin: 0 0 1.67vw 0;
+}
+.box-artis article{
+    text-align: center;
+    cursor: pointer;
 }
 .box-artis article h3{
-    color: rgb(235, 235, 235);
-    font-size: 1.2vw;
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
     font-weight: normal;
+    margin: 0.67vw 0 0 0;
 }
 .box-artis img{
     height: 6.67vw;
     width: 6.67vw;
     border-radius: 6.67vw;
+    box-sizing: border-box;
+    border: 0.2vw solid transparent;
+    object-fit: cover;
+    transition: 0.5s ease-in-out;
 }
 .box-artis img:hover{
-    border: 0.2vw solid rgb(250, 46, 35);
+    border-color: rgb(250, 46, 35);
+}
+.box-album-art a{
+    text-decoration: none;
+    display: block;
+}
+.button-seta{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.perfil-artis{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(38, 38, 38);
+    border-radius: 1vw;
+    padding: 1.33vw 1.67vw;
+    margin: 0 0 2vw 0;
+}
+.perfil-artis h1{
+    color: rgb(235, 235, 235);
+    font-size: 1.67vw;
+    margin: 0 0 0.2vw 0;
+}
+.perfil-artis p{
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
+    margin: 0 0 0.67vw 0;
+}
+.chips-artis{
+    list-style: none;
+    gap: 0.5vw;
+}
+.chips-artis li{
+    border: 0.07vw solid rgb(80, 80, 80);
+    border-radius: 2vw;
+    padding: 0.2vw 0.8vw;
+    font-size: 0.8vw;
+    color: rgb(182, 182, 182);
+}
+.chips-artis .chip-ama{
+    background-color: rgb(240, 250, 115);
+    border-color: rgb(240, 250, 115);
+    color: rgb(21, 21, 21);
+    font-weight: bold;
+}
+.button-fav{
+    background-color: transparent;
+    box-shadow: inset 0 0 0 0.1vw rgb(120, 120, 120);
+    color: rgb(182, 182, 182);
+    padding: 0.67vw 1.67vw;
+    border: none;
+    border-radius: 1vw;
+    font-size: 1vw;
+    cursor: pointer;
+}
+.button-fav:hover{
+    box-shadow: inset 0 0 0 0.1vw rgb(250, 46, 35);
+    color: rgb(250, 46, 35);
     transition: 0.5s ease-in-out;
+}
+.box-album-art{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.33vw;
+}
+.card-album{
+    background-color: rgb(38, 38, 38);
+    border-radius: 1vw;
+    overflow: hidden;
+    transition: 0.5s ease-in-out;
+}
+.card-album:hover{
+    transform: translateY(-0.33vw);
+}
+.card-album img{
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+}
+.rodape-album{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8vw 1vw;
+}
+.rodape-album h3{
+    color: rgb(235, 235, 235);
+    font-size: 1vw;
+}
+.rodape-album p{
+    color: rgb(182, 182, 182);
+    font-size: 0.8vw;
+}
+.rodape-album a{
+    text-decoration: none;
+}
+.button-seta{
+    background-color: rgb(240, 250, 115);
+    border: none;
+    border-radius: 1vw;
+    width: 2vw;
+    height: 1.67vw;
+    font-size: 1vw;
+    cursor: pointer;
+}
+.button-seta:hover{
+    background-color: rgb(242, 255, 60);
 }
 
 
 /* cadastrar album */
 .sessao-cad-album{
-    margin: 2vw 1vw 3.33vw 1vw;
+    margin: 2vw 5vw 3.33vw 5vw;
 }
 .box-cad-album{
     background-color: rgb(250, 46, 35);
@@ -813,6 +952,7 @@ ul a:hover{
     justify-content: center;
     gap: 0.67vw;
     width: 18vw;
+    margin: 5vw 0 0 0;
     height: 18vw;
     box-sizing: border-box;
     border: 0.2vw dashed rgb(21, 21, 21);
@@ -944,4 +1084,323 @@ select{
     background-color: rgb(21, 21, 21);
     color: rgb(250, 46, 35);
     transition: 0.5s ease-in-out;
+}
+
+
+/* visualizar album */
+.all-album{
+    margin: 2vw 10vw 3.33vw 10.33vw;
+}
+.voltar{
+    display: block;
+    color: rgb(120, 120, 120);
+    font-size: 1vw;
+    text-decoration: none;
+    margin: 0 0 1.33vw 0;
+}
+.voltar:hover{
+    color: rgb(250, 46, 35);
+    transition: 0.5s ease-in-out;
+}
+.album-topo{
+    display: flex;
+    gap: 3.33vw;
+    margin: 0 0 2.67vw 0;
+}
+.album-capa-box{
+    position: relative;
+    width: 41.7vw;
+    height: 31.3vw;
+    flex-shrink: 0;
+}
+.album-capa{
+    position: relative;
+    z-index: 1;
+    width: 31.3vw;
+    height: 31.3vw;
+    object-fit: cover;
+    border-radius: 1vw;
+    border: 0.07vw solid rgb(60, 60, 60);
+    background-color: rgb(60, 15, 12);
+}
+.album-disco{
+    position: absolute;
+    top: 1.15vw;
+    left: 12vw;
+    z-index: 0;
+    width: 29vw;
+    height: 29vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(250, 46, 35) 0 12%, rgb(13, 13, 13) 12.5% 100%);
+    box-shadow: inset 0 0 0 2vw rgb(13, 13, 13), inset 0 0 0 2.1vw rgb(38, 38, 38), inset 0 0 0 5vw rgb(13, 13, 13), inset 0 0 0 5.1vw rgb(38, 38, 38);
+}
+.album-info{
+    flex: 1;
+}
+.tag-genero{
+    display: inline-block;
+    background-color: rgb(240, 250, 115);
+    color: rgb(21, 21, 21);
+    font-size: 0.8vw;
+    font-weight: bold;
+    padding: 0.2vw 0.8vw;
+    border-radius: 2vw;
+}
+.album-info h1{
+    color: rgb(235, 235, 235);
+    font-size: 2.4vw;
+    margin: 0.8vw 0 0.2vw 0;
+}
+.album-artista{
+    color: rgb(250, 46, 35);
+    font-size: 1.2vw;
+    text-decoration: none;
+}
+.album-artista:hover{
+    color: rgb(255, 13, 0);
+    transition: 0.5s ease-in-out;
+}
+.album-dados{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1vw 2vw;
+    margin: 1.67vw 0 1.33vw 0;
+}
+.album-dados p{
+    color: rgb(182, 182, 182);
+    font-size: 0.93vw;
+}
+.album-dados h3{
+    color: rgb(235, 235, 235);
+    font-size: 1.07vw;
+}
+.album-desc{
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
+    line-height: 1.6;
+    margin: 0 0 1.33vw 0;
+}
+.album-botoes a{
+    text-decoration: none;
+}
+.album-botoes{
+    display: flex;
+    gap: 0.67vw;
+}
+.button-ama-album, .button-comprar, .button-curtir{
+    border: none;
+    border-radius: 0.5vw;
+    padding: 0.67vw 1.33vw;
+    font-size: 1vw;
+    cursor: pointer;
+}
+.button-ama-album{
+    background-color: rgb(240, 250, 115);
+    color: rgb(21, 21, 21);
+}
+.button-ama-album:hover{
+    background-color: rgb(242, 255, 60);
+}
+.button-comprar{
+    background-color: transparent;
+    box-shadow: inset 0 0 0 0.1vw rgb(250, 46, 35);
+    color: rgb(250, 46, 35);
+}
+.button-comprar:hover{
+    background-color: rgb(250, 46, 35);
+    color: rgb(21, 21, 21);
+    transition: 0.5s ease-in-out;
+}
+.button-curtir{
+    background-color: transparent;
+    box-shadow: inset 0 0 0 0.1vw rgb(120, 120, 120);
+    color: rgb(182, 182, 182);
+}
+.button-curtir:hover{
+    box-shadow: inset 0 0 0 0.1vw rgb(250, 46, 35);
+    color: rgb(250, 46, 35);
+    transition: 0.5s ease-in-out;
+}
+.lista-faixas{
+    flex-direction: column;
+    gap: 0.33vw;
+    list-style: none;
+}
+.lista-faixas li{
+    display: flex;
+    align-items: center;
+    padding: 0.8vw 1vw;
+    border-radius: 0.5vw;
+    font-size: 1vw;
+    color: rgb(235, 235, 235);
+}
+.lista-faixas li:nth-child(odd){
+    background-color: rgb(30, 30, 30);
+}
+.lista-faixas li:hover{
+    background-color: rgb(38, 38, 38);
+    transition: 0.5s ease-in-out;
+}
+.faixa-num{
+    color: rgb(250, 46, 35);
+    width: 2.33vw;
+    font-size: 0.93vw;
+}
+.faixa-titulo{
+    flex: 1;
+}
+.faixa-dur{
+    color: rgb(182, 182, 182);
+    font-size: 0.93vw;
+}
+
+
+/* albuns */
+.button-menor{
+    font-size: 1vw;
+    padding: 0.6vw 1.2vw;
+    border-radius: 0.5vw;
+}
+.all-albuns{
+    margin: 2vw 9.2vw 3.33vw 9.2vw;
+}
+.barra-album{
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    margin: 0 0 2vw 0;
+}
+#busca-album{
+    flex: 1;
+    height: 3.5vw;
+    box-sizing: border-box;
+    background-color: rgb(38, 38, 38);
+    border: none;
+    border-radius: 0.67vw;
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
+    padding: 0 1.33vw 0 3.33vw;
+    background-image: url(img/icons-pesquisar.png);
+    background-repeat: no-repeat;
+    background-size: 1.33vw;
+    background-position: 1.1vw center;
+}
+#busca-album::placeholder{
+    color: rgb(120, 120, 120);
+}
+.barra-album select{
+    width: 14vw;
+    height: 3.5vw;
+    padding: 0 1.33vw;
+    border-radius: 0.67vw;
+    color: rgb(235, 235, 235);
+    font-size: 1vw;
+    font-weight: bold;
+    cursor: pointer;
+}
+.corpo-album{
+    display: flex;
+    gap: 4vw;
+}
+.filtros-album{
+    width: 19vw;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.67vw;
+}
+.filtro{
+    display: flex;
+    flex-direction: column;
+    gap: 0.67vw;
+}
+.filtro h3{
+    color: rgb(240, 250, 115);
+    font-size: 1vw;
+}
+.opcao{
+    display: flex;
+    align-items: center;
+    gap: 0.67vw;
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
+    cursor: pointer;
+}
+.opcao input{
+    accent-color: rgb(250, 46, 35);
+    width: 1vw;
+    height: 1vw;
+    cursor: pointer;
+}
+.opcao:has(input:checked){
+    color: rgb(250, 46, 35);
+}
+.opcao:hover{
+    color: rgb(235, 235, 235);
+    transition: 0.5s ease-in-out;
+}
+.chips-decada{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5vw;
+}
+.chip-decada{
+    background-color: transparent;
+    box-shadow: inset 0 0 0 0.07vw rgb(120, 120, 120);
+    border: none;
+    border-radius: 2vw;
+    padding: 0.33vw 1.2vw;
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
+    font-weight: normal;
+    cursor: pointer;
+}
+.chip-decada:hover{
+    box-shadow: inset 0 0 0 0.07vw rgb(250, 46, 35);
+    color: rgb(250, 46, 35);
+    transition: 0.5s ease-in-out;
+}
+.chip-decada.chip-ativo{
+    background-color: rgb(250, 46, 35);
+    box-shadow: none;
+    color: rgb(235, 235, 235);
+    font-weight: bold;
+}
+.lista-grupos{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2vw;
+}
+.cab-secao h2{
+    color: rgb(235, 235, 235);
+    font-size: 1.2vw;
+}
+.grade-albuns{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.33vw;
+}
+.album-item{
+    text-decoration: none;
+    transition: 0.5s ease-in-out;
+}
+.album-item:hover{
+    transform: translateY(-0.33vw);
+}
+.capa-album{
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 1vw;
+}
+.album-item h3{
+    color: rgb(235, 235, 235);
+    font-size: 1vw;
+    margin: 0.67vw 0 0 0;
+}
+.album-item p{
+    color: rgb(120, 120, 120);
+    font-size: 0.93vw;
 }
