@@ -120,20 +120,19 @@ ul a:hover{
     gap: 1.33vw;
 }
 #buscar{
-    background-color: rgb(38, 38, 38);
-    height: 0.8vw;
     width: 20vw;
-    margin: 2vw 0.33vw 0 -0.33vw;
-    border-radius: 1vw;
-    align-items: center;
-    justify-content: center;
+    margin: 2vw 0.33vw 0 -0.33vw;    
+    height: 3.5vw;
+    background-color: rgb(38, 38, 38);
     border: none;
+    border-radius: 0.67vw;
     color: rgb(182, 182, 182);
-    padding: 1.33vw;
+    font-size: 1vw;
+    padding: 0 1.33vw 0 3.33vw;
     background-image: url(img/icons-pesquisar.png);
     background-repeat: no-repeat;
-    background-size: 2vw;
-    background-position: 0.67vw;
+    background-size: 1.33vw;
+    background-position: 1.1vw center;
 }
 #buscar::placeholder{
     padding: 1.67vw;
@@ -563,7 +562,7 @@ ul a:hover{
 }
 .sessao-genero{
     display: flex;
-    margin: 1.30vw auto 1.80vw;
+    margin: 1.80vw auto 1.80vw;
     gap: 1.30vw;
     justify-content: center;
 
@@ -573,7 +572,7 @@ ul a:hover{
 }
 .sessao-genero article{
     background-color: rgb(38, 38, 38);
-    width: 20vw;
+    width: 23vw;
     height: 12.4vw;
     border-radius: 1vw;
     padding: 1vw;
@@ -674,7 +673,7 @@ ul a:hover{
 .box-recuperar {
     display: flex;
     flex-direction: column;
-    margin: -33.33vw 0 0 0;
+    margin: -31vw 0 0 0;
     justify-content: center;
     align-items: center;
     gap: 1.33vw;
@@ -712,7 +711,6 @@ ul a:hover{
 
 
 /* artistas */
-/* artistas (substitui o bloco antigo) */
 .main-dispo ul a.ativo{
     color: rgb(250, 46, 35);
 }
@@ -729,8 +727,6 @@ ul a:hover{
     color: rgb(250, 46, 35);
     text-decoration: none;
 }
-
-/* cabecalho das secoes (Artistas do genero / Albuns) */
 .cab-secao{
     display: flex;
     align-items: center;
