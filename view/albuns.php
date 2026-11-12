@@ -1,3 +1,8 @@
+<?php
+
+    require_once "../assets/processamento/funcoesDB.php";
+
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -68,65 +73,31 @@
             </aside>
 
             <section class="lista-grupos">
-                <article class="grupo-album">
-                    <article class="cab-secao">
-                        <h2>Pink Floyd</h2>
-                        <hr>
-                        <p>4 álbuns</p>
-                    </article>
-
-                    <section class="grade-albuns">
-                        <a class="album-item" href="../view/visualizar_album.html">
-                            <img class="capa-album" src="../assets/img/thedoors.jpg" alt="The Wall">
-                            <h3>The Wall</h3>
-                            <p>1979</p>
-                        </a>
-
-                        <a class="album-item" href="../view/visualizar_album.html">
-                            <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Animals">
-                            <h3>Animals</h3>
-                            <p>1977</p>
-                        </a>
-
-                        <a class="album-item" href="../view/visualizar_album.html">
-                            <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Meddle">
-                            <h3>Meddle</h3>
-                            <p>1971</p>
-                        </a>
-
-                        <a class="album-item" href="../view/visualizar_album.html">
-                            <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Wish You Were Here">
-                            <h3>Wish You Were Here</h3>
-                            <p>1975</p>
-                        </a>
-                    </section>
-                </article>
+               
 
                 <article class="grupo-album">
                     <article class="cab-secao">
-                        <h2>Led Zeppelin</h2>
+                        <h2></h2>
                         <hr>
                         <p>3 álbuns</p>
                     </article>
 
                     <section class="grade-albuns">
-                        <a class="album-item" href="../view/visualizar_album.html">
-                            <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Led Zeppelin IV">
-                            <h3>Led Zeppelin IV</h3>
-                            <p>1971</p>
-                        </a>
 
-                        <a class="album-item" href="../view/visualizar_album.html">
-                            <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Physical Graffiti">
-                            <h3>Physical Graffiti</h3>
-                            <p>1975</p>
-                        </a>
 
-                        <a class="album-item" href="../view/visualizar_album.html">
-                            <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Houses of the Holy">
-                            <h3>Houses of the Holy</h3>
-                            <p>1973</p>
-                        </a>
+<?php
+                $listaAlbuns = retornarAlbuns();
+                while($album = mysqli_fetch_assoc($listaAlbuns)){
+                    echo "<a class=\"album-item\" href=\"../view/visualizar_album.php?id=" . $album['id_album'] . "\">";
+                    echo "<img class=\"capa-album\" src=\"../assets/" . $album["capa_url"] . "\" alt=\"Led Zeppelin IV\">";
+                   
+                    echo "<h3>$album[titulo] IV</h3>";
+                    
+                    echo "</a>";
+                }
+            ?>
+
+                      
                     </section>
                 </article>
             </section>
