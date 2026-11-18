@@ -85,19 +85,18 @@
                     <section class="grade-albuns">
 
 
-<?php
-                $listaAlbuns = retornarAlbuns();
-                while($album = mysqli_fetch_assoc($listaAlbuns)){
-                    echo "<a class=\"album-item\" href=\"../view/visualizar_album.php?id=" . $album['id_album'] . "\">";
-                    echo "<img class=\"capa-album\" src=\"../assets/" . $album["capa_url"] . "\" alt=\"Led Zeppelin IV\">";
-                   
-                    echo "<h3>$album[titulo] IV</h3>";
+                    <?php
+                        $listaAlbuns = retornarAlbuns();
+                        while($album = mysqli_fetch_assoc($listaAlbuns)){
+                            echo "<a class=\"album-item\" href=\"../view/visualizar_album.php?id=" . $album['id_album'] . "\">";
+                            echo "<img class=\"capa-album\" src=\"../assets/" . $album["capa_url"] . "\" alt=\"Led Zeppelin IV\">";
+                        
+                            echo "<h3>$album[titulo] IV</h3>";
+                            
+                            echo "</a>";
+                        }
+                    ?>
                     
-                    echo "</a>";
-                }
-            ?>
-
-                      
                     </section>
                 </article>
             </section>

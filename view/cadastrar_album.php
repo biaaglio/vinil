@@ -72,7 +72,7 @@ if (isset($_POST['cadastrar'])) {
 
         <article class="main-dispo">
             <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <img class="icon" src="../assets/img/icons-gostar.png" alt="favoritos">
+            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
             <img class="icon" src="../assets/img/icons-usuário.png" alt="usuário">
         </article>
     </main>
@@ -90,8 +90,6 @@ if (isset($_POST['cadastrar'])) {
                         <img class="icone-upload" src="../assets/img/icons-upload.png" alt="">
                         <p>Arraste a capa aqui<br>ou clique para enviar</p>
                     </label>
-
-                    <input id="capa" name="capa" type="file" accept="image/png, image/jpeg" required>
 
                     <small>JPG ou PNG</small>
                 </article>

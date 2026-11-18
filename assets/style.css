@@ -1400,3 +1400,138 @@ select{
     color: rgb(120, 120, 120);
     font-size: 0.93vw;
 }
+
+
+/* curtidos */
+.all-curtidos{
+    margin: 2vw 9.2vw 3.33vw 9.2vw;
+}
+.cab-curtidos{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 1.5vw 0;
+}
+.titulo-curtidos{
+    display: flex;
+    align-items: baseline;
+    gap: 1.33vw;
+}
+.titulo-curtidos h1{
+    color: rgb(235, 235, 235);
+    font-size: 2.2vw;
+}
+.titulo-curtidos p{
+    color: rgb(120, 120, 120);
+    font-size: 1.1vw;
+}
+.ordem-curtidos{
+    width: max-content;
+    height: 3.2vw;
+    padding: 1.vw;
+    background-color: transparent;
+    border: 0.1vw solid rgb(120, 120, 120);
+    border-radius: 2vw;
+    color: rgb(235, 235, 235);
+    cursor: pointer;
+}
+.ordem-curtidos option{
+    background-color: rgb(38, 38, 38);
+}
+.abas-curtidos{
+    display: flex;
+    gap: 1vw;
+    margin: 0 0 1.2vw 0;
+}
+.aba-curtidos{
+    background-color: transparent;
+    box-shadow: inset 0 0 0 0.1vw rgb(120, 120, 120);
+    border: none;
+    border-radius: 2vw;
+    padding: 0.8vw 2.1vw;
+    color: rgb(182, 182, 182);
+    font-size: 1.2vw;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+.aba-curtidos:hover{
+    box-shadow: inset 0 0 0 0.1vw rgb(250, 46, 35);
+    color: rgb(250, 46, 35);
+}
+.aba-curtidos.aba-ativa{
+    background-color: rgb(250, 46, 35);
+    box-shadow: none;
+    color: rgb(235, 235, 235);
+    font-weight: bold;
+}
+.chips-genero{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.67vw;
+    margin: 0 0 2vw 0;
+}
+.chip-genero{
+    background-color: transparent;
+    box-shadow: inset 0 0 0 0.07vw rgb(120, 120, 120);
+    border: none;
+    border-radius: 2vw;
+    padding: 0.5vw 1.4vw;
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+.chip-genero:hover{
+    box-shadow: inset 0 0 0 0.07vw rgb(240, 250, 115);
+    color: rgb(240, 250, 115);
+}
+.chip-genero.chip-genero-ativo{
+    background-color: rgb(240, 250, 115);
+    box-shadow: none;
+    color: rgb(21, 21, 21);
+    font-weight: bold;
+}
+.grade-curtidos .album-item{
+    background-color: rgb(38, 38, 38);
+    border-radius: 1vw;
+    overflow: hidden;
+}
+.grade-curtidos .capa-album{
+    border-radius: 0;
+}
+.capa-curtido{
+    position: relative;
+}
+.info-curtido{
+    padding: 1vw 1.4vw 1.2vw 1.4vw;
+}
+.info-curtido h3{
+    color: rgb(235, 235, 235);
+    font-size: 1.3vw;
+    margin: 0;
+}
+.info-curtido p{
+    color: rgb(182, 182, 182);
+    font-size: 1.1vw;
+    margin: 0.2vw 0 0 0;
+}
+.btn-curtir{
+    position: absolute;
+    top: 0.8vw;
+    right: 0.8vw;
+    width: 3.2vw;
+    height: 3.2vw;
+    border: none;
+    border-radius: 50%;
+    background-color: rgb(38, 38, 38);
+    color: rgb(120, 120, 120);
+    font-size: 1.4vw;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+.btn-curtir:hover{
+    color: rgb(235, 235, 235);
+}
+.btn-curtir.curtido{
+    color: rgb(250, 46, 35);
+}
