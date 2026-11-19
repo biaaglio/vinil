@@ -1,3 +1,18 @@
+<?php
+    session_start();
+    if (!isset($_SESSION['id_usuario'])) {
+        header("Location: ../view/login_usuario.html");
+        exit;
+    }
+
+    require_once "../assets/processamento/funcoesDB.php";
+
+    $idGenero = isset($_GET['genero']) ? intval($_GET['genero']) : 0;
+    $ordenar = isset($_GET['ordenar']) ? $_GET['ordenar'] : 'recentes';
+
+    $listaCurtidos = retornarCurtidosUsuario($_SESSION['id_usuario'], $idGenero, $ordenar);
+    $totalCurtidos = $listaCurtidos ? mysqli_num_rows($listaCurtidos) : 0;
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,7 +29,7 @@
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
                 <a href="../view/generos.html"><li>Gêneros</li></a>
                 <a href="../view/artistas.html"><li>Artistas</li></a>
                 <a href="../view/novidades.html"><li>Novidades</li></a>
@@ -22,9 +37,9 @@
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
@@ -32,118 +47,51 @@
         <section class="cab-curtidos">
             <article class="titulo-curtidos">
                 <h1>Meus curtidos</h1>
-                <p>12 álbuns · 3 artistas</p>
+                <p><?php echo $totalCurtidos; ?> álbuns curtidos</p>
             </article>
 
-            <select class="ordem-curtidos">
-                <option>Ordenar: recentes</option>
-                <option>Ordenar: A-Z</option>
-                <option>Ordenar: Z-A</option>
-                <option>Ordenar: ano</option>
-            </select>
-        </section>
-
-        <section class="abas-curtidos">
-            <button class="aba-curtidos aba-ativa">Álbuns (12)</button>
-            <button class="aba-curtidos">Artistas (3)</button>
+            <form method="GET" action="../view/curtidos_usuario.html">
+                <input type="hidden" name="genero" value="<?php echo $idGenero; ?>">
+                <select name="ordenar" class="ordem-curtidos" onchange="this.form.submit()">
+                    <option value="recentes" <?php if($ordenar == 'recentes') echo 'selected'; ?>>Ordenar: recentes</option>
+                    <option value="az" <?php if($ordenar == 'az') echo 'selected'; ?>>Ordenar: A-Z</option>
+                    <option value="za" <?php if($ordenar == 'za') echo 'selected'; ?>>Ordenar: Z-A</option>
+                    <option value="ano" <?php if($ordenar == 'ano') echo 'selected'; ?>>Ordenar: ano</option>
+                </select>
+            </form>
         </section>
 
         <section class="chips-genero">
-            <button class="chip-genero chip-genero-ativo">Todos</button>
-            <button class="chip-genero">Rock</button>
-            <button class="chip-genero">MPB</button>
-            <button class="chip-genero">Pop</button>
-            <button class="chip-genero">Rap</button>
+            <a href="../view/curtidos_usuario.html?genero=0&ordenar=<?php echo $ordenar; ?>"><button type="button" class="chip-genero <?php if($idGenero == 0) echo 'chip-genero-ativo'; ?>">Todos</button></a>
+            <a href="../view/curtidos_usuario.html?genero=1&ordenar=<?php echo $ordenar; ?>"><button type="button" class="chip-genero <?php if($idGenero == 1) echo 'chip-genero-ativo'; ?>">Rock</button></a>
+            <a href="../view/curtidos_usuario.html?genero=2&ordenar=<?php echo $ordenar; ?>"><button type="button" class="chip-genero <?php if($idGenero == 2) echo 'chip-genero-ativo'; ?>">MPB</button></a>
+            <a href="../view/curtidos_usuario.html?genero=3&ordenar=<?php echo $ordenar; ?>"><button type="button" class="chip-genero <?php if($idGenero == 3) echo 'chip-genero-ativo'; ?>">Pop</button></a>
+            <a href="../view/curtidos_usuario.html?genero=4&ordenar=<?php echo $ordenar; ?>"><button type="button" class="chip-genero <?php if($idGenero == 4) echo 'chip-genero-ativo'; ?>">Rap / Hip-Hop</button></a>
+            <a href="../view/curtidos_usuario.html?genero=5&ordenar=<?php echo $ordenar; ?>"><button type="button" class="chip-genero <?php if($idGenero == 5) echo 'chip-genero-ativo'; ?>">Rap Nacional</button></a>
+            <a href="../view/curtidos_usuario.html?genero=6&ordenar=<?php echo $ordenar; ?>"><button type="button" class="chip-genero <?php if($idGenero == 6) echo 'chip-genero-ativo'; ?>">Eletrônica</button></a>
         </section>
 
         <section class="grade-albuns grade-curtidos">
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
-
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
-
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
-
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
-
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
-
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
-
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
-
-            <a class="album-item" href="../view/visualizar_album.php?id=1">
-                <article class="capa-curtido">
-                    <img class="capa-album" src="../assets/img/thedoors.jpg" alt="Álbum">
-                    <button class="btn-curtir curtido" aria-label="Descurtir">♥</button>
-                </article>
-                <article class="info-curtido">
-                    <h3>Nome Álbum</h3>
-                    <p>Nome Banda · Ano</p>
-                </article>
-            </a>
+            <?php if ($totalCurtidos > 0): ?>
+                <?php while($album = mysqli_fetch_assoc($listaCurtidos)): ?>
+                    <article class="album-item" style="position: relative;">
+                        <a href="../view/visualizar_album.html?id=<?php echo $album['id_album']; ?>" style="text-decoration: none; color: inherit;">
+                            <article class="capa-curtido">
+                                <img class="capa-album" src="../assets/<?php echo htmlspecialchars($album['capa_url']); ?>" alt="<?php echo htmlspecialchars($album['titulo']); ?>">
+                            </article>
+                            <article class="info-curtido">
+                                <h3><?php echo htmlspecialchars($album['titulo']); ?></h3>
+                                <p><?php echo htmlspecialchars($album['nome_artista']); ?> · <?php echo $album['ano_lancamento']; ?></p>
+                            </article>
+                        </a>
+                        <a href="../assets/processamento/processa_curtir.php?id=<?php echo $album['id_album']; ?>&origem=curtidos" title="Remover curtida">
+                            <button type="button" class="btn-curtir curtido" aria-label="Descurtir">♥</button>
+                        </a>
+                    </article>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>Você ainda não curtiu nenhum álbum nesta categoria.</p>
+            <?php endif; ?>
         </section>
     </section>
 </body>

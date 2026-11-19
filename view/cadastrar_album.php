@@ -86,13 +86,24 @@ if (isset($_POST['cadastrar'])) {
             <section class="cad-album-topo">
 
                 <article class="cad-capa-box">
-                    <label class="cad-capa" for="capa">
-                        <img class="icone-upload" src="../assets/img/icons-upload.png" alt="">
-                        <p>Arraste a capa aqui<br>ou clique para enviar</p>
-                    </label>
 
-                    <small>JPG ou PNG</small>
-                </article>
+    <input 
+        type="file" 
+        name="capa" 
+        id="capa" 
+        accept="image/png, image/jpeg"
+        required
+        hidden
+    >
+
+    <label class="cad-capa" for="capa">
+        <img class="icone-upload" src="../assets/img/icons-upload.png" alt="">
+        <p id="texto-upload">Arraste a capa aqui<br>ou clique para enviar</p>
+    </label>
+
+    <small>JPG ou PNG</small>
+
+</article>
 
                 <article class="cad-campos">
 

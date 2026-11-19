@@ -1,3 +1,6 @@
+<?php
+    session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -12,7 +15,7 @@
         <article class="main-dispo2">
            <ul>
                 <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_branca_fundo_transparente.png" alt="logo"></a>
-                <li><a href="../view/albuns.php">Álbuns</a></li>
+                <li><a href="../view/albuns.html">Álbuns</a></li>
                 <li><a href="../view/generos.html">Gêneros</a></li>
                 <li><a href="../view/artistas.html">Artistas</a></li>
                 <li><a href="../view/novidades.html">Novidades</a></li>
@@ -23,13 +26,18 @@
     <section id="img-destaque3"></section>
 
     <section class="sessao-recuperar">
-        <section class="box-recuperar">
-            <h1>Bem-Vindo(a)</h1>
-            <input placeholder="E-mail" type="email">
-            <input placeholder="Nova Senha" type="password">
+        <form class="box-recuperar" method="POST" action="../assets/processamento/processa_recuperar_senha.php">
+            <h1>Redefinir Senha</h1>
 
-            <button class="button-bran">Recuperar</button>
-        </section>
+            <?php if (isset($_GET['erro'])): ?>
+                <p style="color: rgb(250, 46, 35); font-size: 0.9vw;">E-mail não encontrado.</p>
+            <?php endif; ?>
+
+            <input name="email" placeholder="E-mail" type="email" required>
+            <input name="nova_senha" placeholder="Nova Senha" type="password" required>
+
+            <button type="submit" class="button-bran">Recuperar</button>
+        </form>
     </section>
 </body>
 </html>

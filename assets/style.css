@@ -1247,9 +1247,10 @@ select{
 
 /* albuns */
 .button-menor{
-    font-size: 1vw;
-    padding: 0.6vw 1.2vw;
+    font-size: 0.95vw;
+    padding: 0.65vw 1.35vw;
     border-radius: 0.5vw;
+    white-space: nowrap;
 }
 .all-albuns{
     margin: 2vw 9.2vw 3.33vw 9.2vw;
@@ -1579,7 +1580,7 @@ select{
 }
 .cab-tabela, .linha-usuario{
     display: grid;
-    grid-template-columns: 2.3vw 1.3fr 1.8fr 1fr 1fr;
+    grid-template-columns: 2.3vw 1.3fr 1.8fr 1fr 1fr 7vw;
     align-items: center;
     gap: 1vw;
     padding: 0 1.33vw;

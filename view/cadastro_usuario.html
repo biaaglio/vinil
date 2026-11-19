@@ -1,3 +1,6 @@
+<?php
+    session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,7 +17,7 @@
 
         <article class="main-dispo">
            <ul>
-                <li><a href="../view/albuns.php">Álbuns</a></li>
+                <li><a href="../view/albuns.html">Álbuns</a></li>
                 <li><a href="../view/generos.html">Gêneros</a></li>
                 <li><a href="../view/artistas.html">Artistas</a></li>
                 <li><a href="../view/novidades.html">Novidades</a></li>
@@ -26,17 +29,24 @@
         <img src="../assets/img/disco_vinil.png" alt="">
         <section id="img-destaque"></section>
 
-        <section class="box-cadastro">
+        <form class="box-cadastro" method="POST" action="../assets/processamento/processa_cadastro_usuario.php">
             <h1>Cadastre-se</h1>
-            <input placeholder="Nome" type="text">
-            <input placeholder="E-mail" type="email">
-            <input placeholder="Data de Nascimento" type="date">
-            <input placeholder="Gênero" type="text">
-            <input placeholder="Senha" type="password">
 
-            <button class="button-verm-cad">Cadastrar</button>
+            <?php if (isset($_GET['erro']) && $_GET['erro'] == 'email'): ?>
+                <p style="color: rgb(250, 46, 35); font-size: 0.9vw;">Este e-mail já está cadastrado.</p>
+            <?php elseif (isset($_GET['erro'])): ?>
+                <p style="color: rgb(250, 46, 35); font-size: 0.9vw;">Preencha todos os campos obrigatórios.</p>
+            <?php endif; ?>
+
+            <input name="nome" placeholder="Nome" type="text" required>
+            <input name="email" placeholder="E-mail" type="email" required>
+            <input name="data_nascimento" placeholder="Data de Nascimento" type="date" required>
+            <input name="genero_usuario" placeholder="Gênero" type="text">
+            <input name="senha" placeholder="Senha" type="password" required>
+
+            <button type="submit" class="button-verm-cad">Cadastrar</button>
             <a href="../view/login_usuario.html"><p>Já possui um cadastro? Logar</p></a>
-        </section>
+        </form>
     </section>
 
 </body>

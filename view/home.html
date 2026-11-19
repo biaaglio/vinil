@@ -1,3 +1,23 @@
+<?php
+    session_start();
+    require_once "../assets/processamento/funcoesDB.php";
+    $conexao = conectarBD();
+
+    $resNovidades = mysqli_query($conexao, "SELECT albuns.*, artistas.nome AS nome_artista
+                                            FROM albuns
+                                            INNER JOIN artistas ON albuns.id_artista = artistas.id_artista
+                                            ORDER BY albuns.id_album DESC LIMIT 5");
+
+    $contagens = [];
+    $resCont = mysqli_query($conexao, "SELECT id_genero, COUNT(*) AS total FROM albuns GROUP BY id_genero");
+    if ($resCont) {
+        while ($c = mysqli_fetch_assoc($resCont)) {
+            $contagens[$c['id_genero']] = $c['total'];
+        }
+    }
+
+    $logado = isset($_SESSION['id_usuario']);
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,7 +34,7 @@
 
         <article class="main-dispo">
            <ul>
-                <li><a href="../view/albuns.php">Álbuns</a></li>
+                <li><a href="../view/albuns.html">Álbuns</a></li>
                 <li><a href="../view/generos.html">Gêneros</a></li>
                 <li><a href="../view/artistas.html">Artistas</a></li>
                 <li><a href="../view/novidades.html">Novidades</a></li>
@@ -22,8 +42,16 @@
         </article>
 
         <article class="main-dispo">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/login_usuario.html"><button class="button-verm">Login</button></a>
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="<?php echo $logado ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <?php if ($logado): ?>
+                <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+                <a href="../assets/processamento/processa_logout.php"><button class="button-verm">Sair</button></a>
+            <?php else: ?>
+                <a href="../view/login_usuario.html"><button class="button-verm">Login</button></a>
+            <?php endif; ?>
         </article>
     </main>
 
@@ -33,10 +61,18 @@
             <h1>Do clássico ao novo, encontre os discos num só lugar</h1>
             <p>Explore álbuns por artistas e gênero, descubra</p>
             <p>lançamentos e monte sua coleção</p>
-            <article>
-                <input id="buscar" placeholder="Buscar álbum ou artista" type="text" >
-                <button class="button-ama">Buscar</button>
-            </article>
+            <form method="GET" action="../view/albuns.html">
+                <input type="hidden" name="generos[]" value="1">
+                <input type="hidden" name="generos[]" value="2">
+                <input type="hidden" name="generos[]" value="3">
+                <input type="hidden" name="generos[]" value="4">
+                <input type="hidden" name="generos[]" value="5">
+                <input type="hidden" name="generos[]" value="6">
+                <article>
+                    <input id="buscar" name="busca" placeholder="Buscar álbum ou artista" type="text" required>
+                    <button type="submit" class="button-ama">Buscar</button>
+                </article>
+            </form>
         </section>
     
         <img src="../assets/img/album_vinil_caindo.png" alt="vinil">
@@ -50,50 +86,20 @@
         </article>
 
         <article class="sessao-album">
-            <article class="box-album-novi">
-                <img  src="../assets/img/thedoors.jpg" alt="">
-                <h1>Nome Álbum</h1>
-                <article>
-                    <h2>Nome Artista</h2>
-                    <h2>Ano</h3>
-                </article>
-            </article>
-
-            <article class="box-album-novi">
-                <img  src="../assets/img/thedoors.jpg" alt="">
-                <h1>Nome Álbum</h1>
-                <article>
-                    <h2>Nome Artista</h2>
-                    <h2>Ano</h3>
-                </article>
-            </article>
-
-            <article class="box-album-novi">
-                <img  src="../assets/img/thedoors.jpg" alt="">
-                <h1>Nome Álbum</h1>
-                <article>
-                    <h2>Nome Artista</h2>
-                    <h2>Ano</h3>
-                </article>
-            </article>
-
-            <article class="box-album-novi">
-                <img  src="../assets/img/thedoors.jpg" alt="">
-                <h1>Nome Álbum</h1>
-                <article>
-                    <h2>Nome Artista</h2>
-                    <h2>Ano</h3>
-                </article>
-            </article>
-
-            <article class="box-album-novi">
-                <img  src="../assets/img/thedoors.jpg" alt="">
-                <h1>Nome Álbum</h1>
-                <article>
-                    <h2>Nome Artista</h2>
-                    <h2>Ano</h3>
-                </article>
-            </article>
+            <?php if ($resNovidades): ?>
+                <?php while ($nov = mysqli_fetch_assoc($resNovidades)): ?>
+                    <a href="../view/visualizar_album.html?id=<?php echo $nov['id_album']; ?>" style="text-decoration: none; color: inherit;">
+                        <article class="box-album-novi">
+                            <img src="../assets/<?php echo htmlspecialchars($nov['capa_url']); ?>" alt="<?php echo htmlspecialchars($nov['titulo']); ?>">
+                            <h1><?php echo htmlspecialchars($nov['titulo']); ?></h1>
+                            <article>
+                                <h2><?php echo htmlspecialchars($nov['nome_artista']); ?></h2>
+                                <h2><?php echo $nov['ano_lancamento']; ?></h2>
+                            </article>
+                        </article>
+                    </a>
+                <?php endwhile; ?>
+            <?php endif; ?>
         </article>
     </section>
 
@@ -109,68 +115,68 @@
         <p class="sub-explore">Cada lombada é um gênero. Puxe um disco para ver os álbuns.</p>
 
         <section class="estante">
-            <a href="../view/generos.html">
+            <a href="../view/albuns.html?generos[]=6">
                 <article class="gene-vinil">
                     <img class="disco-gene" src="../assets/img/disco_vinil.png" alt="">
                     <article class="lombada lomb-cinza altura-2">
                         <img class="icone-gene" src="../assets/img/disco_vinil.png" alt="">
                         <h1>Eletrônica</h1>
-                        <p>28</p>
+                        <p><?php echo $contagens[6] ?? 0; ?></p>
                     </article>
                 </article>
             </a>
 
-            <a href="../view/generos.html">
+            <a href="../view/albuns.html?generos[]=2">
                 <article class="gene-vinil">
                     <img class="disco-gene" src="../assets/img/disco_vinil.png" alt="">
                     <article class="lombada lomb-verm altura-4">
                         <img class="icone-gene" src="../assets/img/disco_vinil_amarelo.png" alt="">
                         <h1>MPB</h1>
-                        <p>54</p>
+                        <p><?php echo $contagens[2] ?? 0; ?></p>
                     </article>
                 </article>
             </a>
 
-            <a href="../view/generos.html">
+            <a href="../view/albuns.html?generos[]=3">
                 <article class="gene-vinil">
                     <img class="disco-gene" src="../assets/img/disco_vinil.png" alt="">
                     <article class="lombada lomb-preta altura-3">
                         <img class="icone-gene" src="../assets/img/disco_vinil.png" alt="">
                         <h1>Pop</h1>
-                        <p>37</p>
+                        <p><?php echo $contagens[3] ?? 0; ?></p>
                     </article>
                 </article>
             </a>
 
-            <a href="../view/generos.html">
+            <a href="../view/albuns.html?generos[]=4">
                 <article class="gene-vinil">
                     <img class="disco-gene" src="../assets/img/disco_vinil.png" alt="">
                     <article class="lombada lomb-cinza altura-5">
                         <img class="icone-gene" src="../assets/img/disco_vinil.png" alt="">
                         <h1>Rap / Hip-Hop</h1>
-                        <p>41</p>
+                        <p><?php echo $contagens[4] ?? 0; ?></p>
                     </article>
                 </article>
             </a>
 
-            <a href="../view/generos.html">
+            <a href="../view/albuns.html?generos[]=5">
                 <article class="gene-vinil">
                     <img class="disco-gene" src="../assets/img/disco_vinil.png" alt="">
                     <article class="lombada lomb-verm altura-1">
                         <img class="icone-gene" src="../assets/img/disco_vinil_amarelo.png" alt="">
                         <h1>Rap Nacional</h1>
-                        <p>19</p>
+                        <p><?php echo $contagens[5] ?? 0; ?></p>
                     </article>
                 </article>
             </a>
 
-            <a href="../view/generos.html">
+            <a href="../view/albuns.html?generos[]=1">
                 <article class="gene-vinil">
                     <img class="disco-gene" src="../assets/img/disco_vinil.png" alt="">
                     <article class="lombada lomb-ama altura-4">
                         <img class="icone-gene" src="../assets/img/disco_vinil.png" alt="">
                         <h1>Rock</h1>
-                        <p>63</p>
+                        <p><?php echo $contagens[1] ?? 0; ?></p>
                     </article>
                 </article>
             </a>
@@ -181,9 +187,9 @@
     <section class="box-cad-home">
         <article>
             <h2>Tem um vinil que não está aqui?</h2>
-            <p>Recomende um álbum e ajude a completar o catálogo.</p>
+            <p>Cadastre um álbum e ajude a completar o catálogo.</p>
         </article>
-        <a href="../view/cadastrar_album.html"><button class="button-ama">Recomendar álbum</button></a>
+        <a href="<?php echo $logado ? '../view/cadastrar_album.html' : '../view/login_usuario.html'; ?>"><button class="button-ama">Cadastrar álbum</button></a>
     </section>
 
     <footer class="rodape">
@@ -193,7 +199,7 @@
         </article>
 
         <ul>
-            <li><a href="../view/albuns.php">Álbuns</a></li>
+            <li><a href="../view/albuns.html">Álbuns</a></li>
             <li><a href="../view/generos.html">Gêneros</a></li>
             <li><a href="../view/artistas.html">Artistas</a></li>
             <li><a href="../view/novidades.html">Novidades</a></li>

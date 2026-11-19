@@ -1,3 +1,31 @@
+<?php
+    session_start();
+    require_once "../assets/processamento/funcoesDB.php";
+
+    $generoFiltro = isset($_GET['genero']) ? intval($_GET['genero']) : 0;
+    $buscaArtista = isset($_GET['filtro_nome']) ? trim($_GET['filtro_nome']) : '';
+
+    $resArtistas = retornarArtistas($buscaArtista, $generoFiltro);
+    $listaArtistas = [];
+    while ($row = mysqli_fetch_assoc($resArtistas)) {
+        $listaArtistas[] = $row;
+    }
+
+    $idSelecionado = isset($_GET['id_artista']) ? intval($_GET['id_artista']) : 0;
+    if ($idSelecionado == 0 && !empty($listaArtistas)) {
+        $idSelecionado = intval($listaArtistas[0]['id_artista']);
+    }
+
+    $artistaAtual = $idSelecionado > 0 ? retornarArtistaId($idSelecionado) : null;
+    $ordenar = isset($_GET['ordenar']) ? $_GET['ordenar'] : 'recentes';
+    $resAlbunsArtista = $artistaAtual ? retornarAlbunsPorArtista($artistaAtual['id_artista'], $ordenar) : false;
+    $totalAlbunsArtista = $resAlbunsArtista ? mysqli_num_rows($resAlbunsArtista) : 0;
+
+    $logado = isset($_SESSION['id_usuario']);
+    $linkCadArtista = $logado ? "../view/cadastrar_novo_artista.html" : "../view/login_usuario.html";
+    $linkCadAlbum = $logado ? "../view/cadastrar_album.html" : "../view/login_usuario.html";
+    $linkCadMusica = $logado ? "../view/cadastrar_musica.html" : "../view/login_usuario.html";
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,120 +42,139 @@
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
                 <a href="../view/generos.html"><li>Gêneros</li></a>
-                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a class="ativo" href="../view/artistas.html"><li>Artistas</li></a>
                 <a href="../view/novidades.html"><li>Novidades</li></a>
             </ul>
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="gostei">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
-
     <section class="all-artis">
-        <h2>Gêneros / <a href="../view/generos.html">Rock</a></h2>
+        <article style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5vw; gap: 1vw; flex-wrap: wrap;">
+            <form method="GET" action="../view/albuns.html" style="display: flex; gap: 0.8vw; flex: 1; min-width: 24vw;">
+                <input type="hidden" name="generos[]" value="1">
+                <input type="hidden" name="generos[]" value="2">
+                <input type="hidden" name="generos[]" value="3">
+                <input type="hidden" name="generos[]" value="4">
+                <input type="hidden" name="generos[]" value="5">
+                <input type="hidden" name="generos[]" value="6">
+                <input type="text" name="busca" placeholder="Pesquisar artista na página de álbuns..." style="padding: 0.7vw 1vw; border-radius: 0.5vw; border: 1px solid rgb(60,60,60); background: rgb(28,28,28); color: white; width: 100%;" required>
+                <button type="submit" class="button-ama button-menor">Buscar</button>
+            </form>
 
-        <article class="cab-secao">
-            <h1>Artistas do gênero</h1>
-            <hr>
-        </article>
-
-        <article class="box-artis">
-            <article class="artis-sel">
-                <img src="../assets/img/thedoors.jpg" alt="Pink Floyd">
-                <h3>The Doors</h3>
-            </article>
-
-            <article>
-                <img src="../assets/img/thedoors.jpg" alt="Led Zeppelin">
-                <h3>Megadeth</h3>
-            </article>
-
-            <article>
-                <img src="../assets/img/thedoors.jpg" alt="Queen">
-                <h3>Motörhead</h3>
-            </article>
-
-            <article>
-                <img src="../assets/img/thedoors.jpg" alt="Nirvana">
-                <h3>System of a Down</h3>
-            </article>
-
-            <article>
-                <img src="../assets/img/thedoors.jpg" alt="AC/DC">
-                <h3>Aerosmith</h3>
+            <article style="display: flex; gap: 1vw; flex-shrink: 0;">
+                <a href="<?php echo $linkCadAlbum; ?>"><button type="button" class="button-ama button-menor">+ Álbum</button></a>
+                <a href="<?php echo $linkCadMusica; ?>"><button type="button" class="button-ama button-menor">+ Faixas</button></a>
+                <a href="<?php echo $linkCadArtista; ?>"><button type="button" class="button-ama button-menor">+ Artista</button></a>
             </article>
         </article>
 
-        <section class="perfil-artis">
-            <article>
-                <h1>The Doors</h1>
-                <p>Banda estadunidense, fundada em 1965, em Los Angeles, Califórnia</p>
-                <ul class="chips-artis">
-                    <li class="chip-ama">Rock</li>
-                    <li>9 álbuns</li>
-                </ul>
-            </article>
-            <button class="button-fav">Favoritar</button>
+        <section class="chips-genero" style="margin-bottom: 1.5vw;">
+            <a href="../view/artistas.html?genero=0"><button type="button" class="chip-genero <?php if($generoFiltro == 0) echo 'chip-genero-ativo'; ?>">Todos</button></a>
+            <a href="../view/artistas.html?genero=1"><button type="button" class="chip-genero <?php if($generoFiltro == 1) echo 'chip-genero-ativo'; ?>">Rock</button></a>
+            <a href="../view/artistas.html?genero=2"><button type="button" class="chip-genero <?php if($generoFiltro == 2) echo 'chip-genero-ativo'; ?>">MPB</button></a>
+            <a href="../view/artistas.html?genero=3"><button type="button" class="chip-genero <?php if($generoFiltro == 3) echo 'chip-genero-ativo'; ?>">Pop</button></a>
+            <a href="../view/artistas.html?genero=4"><button type="button" class="chip-genero <?php if($generoFiltro == 4) echo 'chip-genero-ativo'; ?>">Rap / Hip-Hop</button></a>
+            <a href="../view/artistas.html?genero=5"><button type="button" class="chip-genero <?php if($generoFiltro == 5) echo 'chip-genero-ativo'; ?>">Rap Nacional</button></a>
+            <a href="../view/artistas.html?genero=6"><button type="button" class="chip-genero <?php if($generoFiltro == 6) echo 'chip-genero-ativo'; ?>">Eletrônica</button></a>
         </section>
 
         <article class="cab-secao">
-            <h1>Álbuns</h1>
-            <p>3 no catálogo</p>
+            <h1>Artistas do catálogo</h1>
             <hr>
-            <select class="ordem-curtidos">
-                <option>Ordenar: recentes</option>
-                <option>Ordenar: A-Z</option>
-                <option>Ordenar: Z-A</option>
-                <option>Ordenar: ano</option>
-            </select>
+            <p><?php echo count($listaArtistas); ?> artistas</p>
         </article>
 
-        <section class="box-album-art">
-            <a href="../view/visualizar_album.html">
-                <article class="card-album">
-                    <img src="../assets/img/thedoors.jpg" alt="The Wall">
-                    <section class="rodape-album">
-                        <article>
-                            <h3>The Doors</h3>
-                            <p>1967</p>
+        <section style="display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5vw, 1fr)); gap: 1.5vw; margin-bottom: 2.2vw; background-color: rgb(26, 26, 26); padding: 1.5vw; border-radius: 1vw; border: 1px solid rgb(42, 42, 42);">
+            <?php if (empty($listaArtistas)): ?>
+                <p style="grid-column: 1 / -1;">Nenhum artista encontrado neste filtro.</p>
+            <?php else: ?>
+                <?php foreach ($listaArtistas as $art): ?>
+                    <?php
+                        $foto = $art['foto_url'];
+                        if (strpos($foto, 'assets/') === 0) {
+                            $foto = substr($foto, 7);
+                        }
+                        $ativo = ($artistaAtual && $art['id_artista'] == $artistaAtual['id_artista']);
+                    ?>
+                    <a href="../view/artistas.html?genero=<?php echo $generoFiltro; ?>&id_artista=<?php echo $art['id_artista']; ?>#perfil-artista" style="text-decoration: none; color: inherit;">
+                        <article style="text-align: center; padding: 0.8vw 0.5vw; border-radius: 0.8vw; background-color: <?php echo $ativo ? 'rgb(42, 42, 42)' : 'transparent'; ?>; border: 1px solid <?php echo $ativo ? 'rgb(250, 46, 35)' : 'transparent'; ?>;">
+                            <img src="../assets/<?php echo htmlspecialchars($foto); ?>" alt="<?php echo htmlspecialchars($art['nome']); ?>" style="height: 5.5vw; width: 5.5vw; border-radius: 50%; object-fit: cover; border: 0.15vw solid <?php echo $ativo ? 'rgb(250, 46, 35)' : 'rgb(65, 65, 65)'; ?>;">
+                            <h3 style="color: <?php echo $ativo ? 'rgb(240, 250, 115)' : 'rgb(210, 210, 210)'; ?>; font-size: 0.92vw; font-weight: <?php echo $ativo ? 'bold' : 'normal'; ?>; margin-top: 0.5vw;">
+                                <?php echo htmlspecialchars($art['nome']); ?>
+                            </h3>
                         </article>
-                        <span class="button-seta">↗</span>
-                    </section>
-                </article>
-            </a>
-
-            <a href="../view/visualizar_album.html">
-                <article class="card-album">
-                    <img src="../assets/img/thedoors.jpg" alt="Animals">
-                    <section class="rodape-album">
-                        <article>
-                            <h3>Morrison Hotel</h3>
-                            <p>1970</p>
-                        </article>
-                        <span class="button-seta">↗</span>
-                    </section>
-                </article>
-            </a>
-
-            <a href="../view/visualizar_album.html">
-                <article class="card-album">
-                    <img src="../assets/img/thedoors.jpg" alt="Wish You Were Here">
-                    <section class="rodape-album">
-                        <article>
-                            <h3>L.A Woman</h3>
-                            <p>1971</p>
-                        </article>
-                        <span class="button-seta">↗</span>
-                    </section>
-                </article>
-            </a>
+                    </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </section>
+
+        <?php if ($artistaAtual): ?>
+            <section class="perfil-artis" id="perfil-artista">
+                <article>
+                    <h1><?php echo htmlspecialchars($artistaAtual['nome']); ?></h1>
+                    <p><?php echo htmlspecialchars($artistaAtual['biografia']); ?></p>
+                    <ul class="chips-artis">
+                        <?php if (!empty($artistaAtual['sigla'])): ?>
+                            <li class="chip-ama"><?php echo htmlspecialchars($artistaAtual['sigla']); ?></li>
+                        <?php endif; ?>
+                        <li><?php echo $totalAlbunsArtista; ?> álbuns</li>
+                    </ul>
+                </article>
+                <article style="display: flex; gap: 0.8vw;">
+                    <a href="../view/albuns.html?generos[]=1&generos[]=2&generos[]=3&generos[]=4&generos[]=5&generos[]=6&busca=<?php echo urlencode($artistaAtual['nome']); ?>">
+                        <button type="button" class="button-fav">Ver nos álbuns</button>
+                    </a>
+                </article>
+            </section>
+
+            <article class="cab-secao">
+                <h1>Álbuns de <?php echo htmlspecialchars($artistaAtual['nome']); ?></h1>
+                <p><?php echo $totalAlbunsArtista; ?> no catálogo</p>
+                <hr>
+                <form method="GET" action="../view/artistas.html">
+                    <input type="hidden" name="genero" value="<?php echo $generoFiltro; ?>">
+                    <input type="hidden" name="id_artista" value="<?php echo $artistaAtual['id_artista']; ?>">
+                    <select name="ordenar" class="ordem-curtidos" onchange="this.form.submit()">
+                        <option value="recentes" <?php if($ordenar == 'recentes') echo 'selected'; ?>>Ordenar: recentes</option>
+                        <option value="az" <?php if($ordenar == 'az') echo 'selected'; ?>>Ordenar: A-Z</option>
+                        <option value="za" <?php if($ordenar == 'za') echo 'selected'; ?>>Ordenar: Z-A</option>
+                        <option value="ano" <?php if($ordenar == 'ano') echo 'selected'; ?>>Ordenar: ano</option>
+                    </select>
+                </form>
+            </article>
+
+            <section class="box-album-art">
+                <?php if ($totalAlbunsArtista > 0): ?>
+                    <?php while ($alb = mysqli_fetch_assoc($resAlbunsArtista)): ?>
+                        <a href="../view/visualizar_album.html?id=<?php echo $alb['id_album']; ?>">
+                            <article class="card-album">
+                                <img src="../assets/<?php echo htmlspecialchars($alb['capa_url']); ?>" alt="<?php echo htmlspecialchars($alb['titulo']); ?>">
+                                <section class="rodape-album">
+                                    <article>
+                                        <h3><?php echo htmlspecialchars($alb['titulo']); ?></h3>
+                                        <p><?php echo $alb['ano_lancamento']; ?> · <?php echo htmlspecialchars($alb['nome_genero']); ?></p>
+                                    </article>
+                                    <span class="button-seta">↗</span>
+                                </section>
+                            </article>
+                        </a>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p>Nenhum álbum cadastrado para este artista ainda.</p>
+                <?php endif; ?>
+            </section>
+        <?php endif; ?>
     </section>
 
 </body>

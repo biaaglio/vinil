@@ -1,3 +1,21 @@
+<?php
+session_start();
+require_once "../assets/processamento/funcoesDB.php";
+if (!usuarioEhAdmin()) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+
+$id = isset($_GET['id']) ? intval($_GET['id']) : intval($_POST['id_artista'] ?? 0);
+
+if (isset($_POST['atualizar'])) {
+    atualizarArtista($id, $_POST['nome'], $_POST['biografia'], $_FILES['foto'] ?? []);
+    header("Location: ../view/gerenciar_catalogo.html?aba=artistas&atualizado=1");
+    exit;
+}
+
+$artista = retornarArtistaId($id);
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -10,96 +28,76 @@
 
     <main>
         <article class="main-dispo">
-            <a href="../view/home.html">
-                <img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo">
-            </a>
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
         </article>
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
                 <a href="../view/generos.html"><li>Gêneros</li></a>
-                <a class="ativo" href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
                 <a href="../view/novidades.html"><li>Novidades</li></a>
             </ul>
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
     <section class="sessao-cad-album">
-
-        <form class="box-cad-album" method="POST" action="" enctype="multipart/form-data">
+        <?php if ($artista): ?>
+        <?php
+            $foto = $artista['foto_url'];
+            if (strpos($foto, 'assets/') === 0) {
+                $foto = substr($foto, 7);
+            }
+        ?>
+        <form class="box-cad-album" method="POST" action="../view/editar_artista.html?id=<?php echo $artista['id_artista']; ?>" enctype="multipart/form-data">
+            <input type="hidden" name="id_artista" value="<?php echo $artista['id_artista']; ?>">
 
             <h1>Editar artista</h1>
 
             <section class="cad-album-topo">
-
                 <article class="cad-capa-box">
                     <label class="cad-capa" for="capa">
-                        <img class="capa-atual" src="../assets/img/thedoors.jpg" alt="foto atual">
+                        <img class="capa-atual" src="../assets/<?php echo htmlspecialchars($foto); ?>" alt="foto atual">
                         <img class="icone-upload" src="../assets/img/icons-upload.png" alt="">
-                        <p>Arraste a foto aqui<br>ou clique para trocar</p>
+                        <p>Clique para trocar a foto</p>
                     </label>
                     <input type="file" id="capa" name="foto" accept="image/png, image/jpeg" hidden>
-
-                    <small>JPG ou PNG, até 2 MB</small>
+                    <small>JPG ou PNG</small>
                 </article>
 
                 <article class="cad-campos">
-
                     <label class="campo-total">Nome do artista
-                        <input type="text" name="nome" placeholder="Pink Floyd" value="Pink Floyd" required>
-                    </label>
-
-                    <label class="campo">Gênero principal
-                        <select name="genero" required>
-                            <option value="">Selecione o gênero</option>
-                            <option value="Rock" selected>Rock</option>
-                            <option value="MPB">MPB</option>
-                            <option value="Pop">Pop</option>
-                            <option value="Rap">Rap</option>
-                            <option value="Eletrônica">Eletrônica</option>
-                        </select>
-                    </label>
-
-                    <label class="campo">País de origem
-                        <input type="text" name="pais" placeholder="País de origem" value="Reino Unido">
-                    </label>
-
-                    <label class="campo">Ano de início
-                        <input type="number" name="anoInicio" min="1900" max="2100" placeholder="Ano" value="1965">
-                    </label>
-
-                    <label class="campo">Link para escutar
-                        <input type="url" name="linkSpotify" placeholder="https://" value="https://open.spotify.com/artist/pink-floyd">
+                        <input type="text" name="nome" value="<?php echo htmlspecialchars($artista['nome']); ?>" required>
                     </label>
 
                     <label class="campo-total">Biografia
-                        <textarea name="biografia" placeholder="Conte um pouco sobre o artista">Banda britânica de rock progressivo formada em Londres, em 1965.</textarea>
+                        <textarea name="biografia"><?php echo htmlspecialchars($artista['biografia']); ?></textarea>
                     </label>
-
                 </article>
             </section>
 
             <article class="cad-botoes">
-
-                <a href="gerenciar_catalogo.html">
+                <a href="../view/gerenciar_catalogo.html?aba=artistas">
                     <button class="button-contorno" type="button">Cancelar</button>
                 </a>
 
                 <button class="button-ama" type="submit" name="atualizar">
                     Salvar alterações
                 </button>
-
             </article>
-
         </form>
-
+        <?php else: ?>
+            <p>Artista não encontrado.</p>
+        <?php endif; ?>
     </section>
 
 </body>

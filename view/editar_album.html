@@ -1,3 +1,38 @@
+<?php
+session_start();
+require_once "../assets/processamento/funcoesDB.php";
+if (!usuarioEhAdmin()) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+$conexao = conectarBD();
+
+$id = isset($_GET['id']) ? intval($_GET['id']) : intval($_POST['id_album'] ?? 0);
+
+if (isset($_POST['atualizar'])) {
+    atualizarAlbum(
+        $id,
+        $_POST['titulo'],
+        $_POST['ano'],
+        $_POST['gravadora'],
+        $_POST['formato'],
+        $_POST['condicao'],
+        $_POST['descricao'],
+        $_FILES['capa'] ?? [],
+        $_POST['linkCompra'],
+        $_POST['linkSpotify'],
+        $_POST['idArtista'],
+        $_POST['idGenero']
+    );
+    header("Location: ../view/gerenciar_catalogo.html?aba=albuns&atualizado=1");
+    exit;
+}
+
+$resAlbum = retornarAlbumId($id);
+$album = $resAlbum ? mysqli_fetch_assoc($resAlbum) : null;
+$artistas = mysqli_query($conexao, "SELECT * FROM artistas ORDER BY nome ASC");
+$generos = mysqli_query($conexao, "SELECT * FROM generos ORDER BY id_genero ASC");
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -10,14 +45,12 @@
 
     <main>
         <article class="main-dispo">
-            <a href="../view/home.html">
-                <img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo">
-            </a>
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
         </article>
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
                 <a href="../view/generos.html"><li>Gêneros</li></a>
                 <a href="../view/artistas.html"><li>Artistas</li></a>
                 <a href="../view/novidades.html"><li>Novidades</li></a>
@@ -25,148 +58,101 @@
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
     <section class="sessao-cad-album">
-
-        <form class="box-cad-album" method="POST" action="" enctype="multipart/form-data">
+        <?php if ($album): ?>
+        <form class="box-cad-album" method="POST" action="../view/editar_album.html?id=<?php echo $album['id_album']; ?>" enctype="multipart/form-data">
+            <input type="hidden" name="id_album" value="<?php echo $album['id_album']; ?>">
 
             <h1>Editar álbum</h1>
 
             <section class="cad-album-topo">
-
                 <article class="cad-capa-box">
                     <label class="cad-capa" for="capa">
-                        <img class="capa-atual" src="../assets/img/thedoors.jpg" alt="capa atual">
+                        <img class="capa-atual" src="../assets/<?php echo htmlspecialchars($album['capa_url']); ?>" alt="capa atual">
                         <img class="icone-upload" src="../assets/img/icons-upload.png" alt="">
-                        <p>Arraste a capa aqui<br>ou clique para trocar</p>
+                        <p>Clique para trocar a capa</p>
                     </label>
                     <input type="file" id="capa" name="capa" accept="image/png, image/jpeg" hidden>
-
                     <small>JPG ou PNG</small>
                 </article>
 
                 <article class="cad-campos">
-
                     <label class="campo-total">Título do álbum
-                        <input type="text" name="titulo" placeholder="Título do álbum" value="Led Zeppelin IV" required>
+                        <input type="text" name="titulo" value="<?php echo htmlspecialchars($album['titulo']); ?>" required>
                     </label>
 
                     <label class="campo">Artista
                         <select name="idArtista" required>
-                            <option value="">Selecione um artista</option>
-                            <option value="1">Pink Floyd</option>
-                            <option value="2" selected>Led Zeppelin</option>
-                            <option value="3">Aerosmith</option>
+                            <?php while ($art = mysqli_fetch_assoc($artistas)): ?>
+                                <option value="<?php echo $art['id_artista']; ?>" <?php if($art['id_artista'] == $album['id_artista']) echo 'selected'; ?>>
+                                    <?php echo htmlspecialchars($art['nome']); ?>
+                                </option>
+                            <?php endwhile; ?>
                         </select>
                     </label>
 
                     <label class="campo">Gênero
                         <select name="idGenero" required>
-                            <option value="">Selecione um gênero</option>
-                            <option value="1" selected>Rock</option>
-                            <option value="2">MPB</option>
-                            <option value="3">Pop</option>
-                            <option value="4">Rap / Hip-Hop</option>
+                            <?php while ($gen = mysqli_fetch_assoc($generos)): ?>
+                                <option value="<?php echo $gen['id_genero']; ?>" <?php if($gen['id_genero'] == $album['id_genero']) echo 'selected'; ?>>
+                                    <?php echo htmlspecialchars($gen['nome']); ?>
+                                </option>
+                            <?php endwhile; ?>
                         </select>
                     </label>
 
                     <label class="campo">Ano de lançamento
-                        <input type="number" name="ano" min="1900" max="2100" placeholder="Ano" value="1971" required>
+                        <input type="number" name="ano" min="1900" max="2100" value="<?php echo $album['ano_lancamento']; ?>" required>
                     </label>
 
                     <label class="campo">Gravadora
-                        <input type="text" name="gravadora" placeholder="Gravadora" value="Atlantic Records">
+                        <input type="text" name="gravadora" value="<?php echo htmlspecialchars($album['gravadora']); ?>">
                     </label>
 
                     <label class="campo">Formato
-                        <select name="formato" required>
-                            <option value="">Selecione o formato</option>
-                            <option value="LP 12 polegadas" selected>LP 12 polegadas</option>
-                            <option value="LP 7 polegadas">LP 7 polegadas</option>
-                            <option value="CD">CD</option>
-                            <option value="Fita cassete">Fita cassete</option>
-                        </select>
+                        <input type="text" name="formato" value="<?php echo htmlspecialchars($album['formato']); ?>" required>
                     </label>
 
                     <label class="campo">Condição
-                        <select name="condicao" required>
-                            <option value="">Selecione a condição</option>
-                            <option value="Novo">Novo</option>
-                            <option value="Excelente estado">Excelente estado</option>
-                            <option value="Bom estado" selected>Bom estado</option>
-                            <option value="Regular">Regular</option>
-                        </select>
+                        <input type="text" name="condicao" value="<?php echo htmlspecialchars($album['condicao']); ?>" required>
                     </label>
 
                     <label class="campo-total">Link para comprar álbum
-                        <input type="url" name="linkCompra" placeholder="https://" value="https://loja.exemplo.com/led-zeppelin-iv">
+                        <input type="url" name="linkCompra" value="<?php echo htmlspecialchars($album['link_compra']); ?>">
                     </label>
 
                     <label class="campo-total">Link para escutar
-                        <input type="url" name="linkSpotify" placeholder="https://" value="https://open.spotify.com/album/led-zeppelin-iv">
+                        <input type="url" name="linkSpotify" value="<?php echo htmlspecialchars($album['link_spotify']); ?>">
                     </label>
 
                     <label class="campo-total">Descrição
-                        <textarea name="descricao" placeholder="Conte um pouco sobre o álbum">Quarto álbum da banda, com faixas que se tornaram marcos do rock clássico.</textarea>
+                        <textarea name="descricao"><?php echo htmlspecialchars($album['descricao']); ?></textarea>
                     </label>
-
                 </article>
             </section>
 
-            <section class="cad-faixas">
-
-                <h3>Faixas</h3>
-
-                <div id="lista-faixas">
-
-                    <article class="faixa-linha">
-                        <span>01</span>
-                        <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da faixa" value="Black Dog">
-                        <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00" value="4:55">
-                        <button class="faixa-remover" type="button">✕</button>
-                    </article>
-
-                    <article class="faixa-linha">
-                        <span>02</span>
-                        <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da faixa" value="Rock and Roll">
-                        <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00" value="3:40">
-                        <button class="faixa-remover" type="button">✕</button>
-                    </article>
-
-                    <article class="faixa-linha">
-                        <span>03</span>
-                        <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da faixa" value="The Battle of Evermore">
-                        <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00" value="5:51">
-                        <button class="faixa-remover" type="button">✕</button>
-                    </article>
-
-                </div>
-
-                <button class="faixa-add" type="button">
-                    + Adicionar faixa
-                </button>
-
-            </section>
-
             <article class="cad-botoes">
-
-                <a href="gerenciar_catalogo.html">
+                <a href="../view/gerenciar_catalogo.html?aba=albuns">
                     <button class="button-contorno" type="button">Cancelar</button>
                 </a>
 
                 <button class="button-ama" type="submit" name="atualizar">
                     Salvar alterações
                 </button>
-
             </article>
-
         </form>
-
+        <?php else: ?>
+            <p>Álbum não encontrado.</p>
+        <?php endif; ?>
     </section>
 
 </body>

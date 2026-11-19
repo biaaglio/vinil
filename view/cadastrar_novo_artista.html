@@ -1,3 +1,24 @@
+<?php
+session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+
+require_once "../assets/processamento/funcoesDB.php";
+
+if (isset($_POST['cadastrar'])) {
+    $nome = $_POST['nome'] ?? '';
+    $biografia = $_POST['biografia'] ?? '';
+    $foto = $_FILES['foto'] ?? [];
+
+    $idNovo = inserirArtista($nome, $biografia, $foto);
+    if ($idNovo) {
+        header("Location: ../view/artistas.html?id_artista=" . $idNovo);
+        exit;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -10,14 +31,12 @@
 
     <main>
         <article class="main-dispo">
-            <a href="../view/home.html">
-                <img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo">
-            </a>
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
         </article>
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
                 <a href="../view/generos.html"><li>Gêneros</li></a>
                 <a class="ativo" href="../view/artistas.html"><li>Artistas</li></a>
                 <a href="../view/novidades.html"><li>Novidades</li></a>
@@ -25,15 +44,15 @@
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
     <section class="sessao-cad-album">
 
-        <form class="box-cad-album" method="POST" action="" enctype="multipart/form-data">
+        <form class="box-cad-album" method="POST" action="../view/cadastrar_novo_artista.html" enctype="multipart/form-data">
 
             <h1>Cadastrar novo artista</h1>
 
@@ -41,10 +60,11 @@
 
                 <article class="cad-capa-box">
                     <label class="cad-capa" for="capa">
-                        <img class="icone-upload" src="../assets/img/icons-upload.png" alt="">
-                        <p>Arraste a foto aqui<br>ou clique para enviar</p>
+                        <img id="preview-foto" src="" alt="" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:0.5vw;">
+                        <img class="icone-upload" id="icone-upload" src="../assets/img/icons-upload.png" alt="">
+                        <p id="texto-upload">Arraste a foto aqui<br>ou clique para enviar</p>
                     </label>
-                    <input type="file" id="capa" name="foto" accept="image/png, image/jpeg" hidden>
+                    <input type="file" id="capa" name="foto" accept="image/png, image/jpeg" hidden onchange="mostrarPreview(this)">
 
                     <small>JPG ou PNG, até 2 MB</small>
                 </article>
@@ -52,30 +72,7 @@
                 <article class="cad-campos">
 
                     <label class="campo-total">Nome do artista
-                        <input type="text" name="nome" placeholder="Pink Floyd" required>
-                    </label>
-
-                    <label class="campo">Gênero principal
-                        <select name="genero" required>
-                            <option value="">Selecione o gênero</option>
-                            <option value="Rock">Rock</option>
-                            <option value="MPB">MPB</option>
-                            <option value="Pop">Pop</option>
-                            <option value="Rap">Rap</option>
-                            <option value="Eletrônica">Eletrônica</option>
-                        </select>
-                    </label>
-
-                    <label class="campo">País de origem
-                        <input type="text" name="pais" placeholder="País de origem">
-                    </label>
-
-                    <label class="campo">Ano de início
-                        <input type="number" name="anoInicio" min="1900" max="2100" placeholder="Ano">
-                    </label>
-
-                    <label class="campo">Link para escutar
-                        <input type="url" name="linkSpotify" placeholder="https://">
+                        <input type="text" name="nome" placeholder="Ex: Pink Floyd" required>
                     </label>
 
                     <label class="campo-total">Biografia
@@ -86,7 +83,6 @@
             </section>
 
             <article class="cad-botoes">
-
                 <a href="../view/artistas.html">
                     <button class="button-contorno" type="button">Cancelar</button>
                 </a>
@@ -94,12 +90,27 @@
                 <button class="button-ama" type="submit" name="cadastrar">
                     Salvar artista
                 </button>
-
             </article>
 
         </form>
 
     </section>
+
+    <script>
+        function mostrarPreview(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview-foto');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('icone-upload').style.display = 'none';
+                    document.getElementById('texto-upload').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 
 </body>
 </html>

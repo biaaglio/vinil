@@ -1,0 +1,210 @@
+<?php
+session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+
+require_once "../assets/processamento/funcoesDB.php";
+$conexao = conectarBD();
+
+$idAlbumPre = isset($_GET['id_album']) ? intval($_GET['id_album']) : intval($_POST['id_album'] ?? 0);
+$resAlbuns = mysqli_query($conexao, "SELECT albuns.id_album, albuns.titulo, artistas.nome AS nome_artista
+                                    FROM albuns
+                                    INNER JOIN artistas ON albuns.id_artista = artistas.id_artista
+                                    ORDER BY albuns.titulo ASC");
+
+$faixasExistentes = [];
+$proximaFaixa = 1;
+if ($idAlbumPre > 0) {
+    $resFaixas = retornarMusicasAlbum($idAlbumPre);
+    if ($resFaixas) {
+        while ($fx = mysqli_fetch_assoc($resFaixas)) {
+            $faixasExistentes[] = $fx;
+            if (intval($fx['numero_faixa']) >= $proximaFaixa) {
+                $proximaFaixa = intval($fx['numero_faixa']) + 1;
+            }
+        }
+    }
+}
+
+$mensagemConflito = "";
+if (isset($_POST['cadastrar_faixas'])) {
+    $idAlbumDestino = intval($_POST['id_album'] ?? 0);
+    if ($idAlbumDestino > 0 && !empty($_POST['faixa'])) {
+        $ignoradas = [];
+        $inseridas = 0;
+
+        foreach ($_POST['faixa'] as $i => $tituloFaixa) {
+            $tituloLimpo = trim($tituloFaixa);
+            if ($tituloLimpo !== '') {
+                $numFaixa = intval($_POST['numero'][$i] ?? ($i + 1));
+                $duracaoFaixa = $_POST['duracao'][$i] ?? '';
+
+                if (verificarFaixaExistente($idAlbumDestino, $numFaixa, $tituloLimpo)) {
+                    $ignoradas[] = "Faixa #" . str_pad($numFaixa, 2, '0', STR_PAD_LEFT) . " - " . $tituloLimpo;
+                } else {
+                    inserirMusica($idAlbumDestino, $numFaixa, $tituloLimpo, $duracaoFaixa);
+                    $inseridas++;
+                }
+            }
+        }
+
+        if (empty($ignoradas)) {
+            header("Location: ../view/visualizar_album.html?id=" . $idAlbumDestino);
+            exit;
+        } else {
+            $mensagemConflito = "Algumas faixas não foram adicionadas porque o número ou o nome já existe neste álbum: " . implode(", ", $ignoradas) . ".";
+            $faixasExistentes = [];
+            $proximaFaixa = 1;
+            $resFaixas = retornarMusicasAlbum($idAlbumDestino);
+            if ($resFaixas) {
+                while ($fx = mysqli_fetch_assoc($resFaixas)) {
+                    $faixasExistentes[] = $fx;
+                    if (intval($fx['numero_faixa']) >= $proximaFaixa) {
+                        $proximaFaixa = intval($fx['numero_faixa']) + 1;
+                    }
+                }
+            }
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Músicas / Faixas</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+    <main>
+        <article class="main-dispo">
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
+        </article>
+
+        <article class="main-dispo">
+            <ul>
+                <a class="ativo" href="../view/albuns.html"><li>Álbuns</li></a>
+                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/novidades.html"><li>Novidades</li></a>
+            </ul>
+        </article>
+
+        <article class="main-dispo">
+            <?php if (usuarioEhAdmin()): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+        </article>
+    </main>
+
+    <section class="sessao-cad-album">
+        <form class="box-cad-album" method="POST" action="../view/cadastrar_musica.html?id_album=<?php echo $idAlbumPre; ?>">
+            <h1>Adicionar músicas / faixas</h1>
+
+            <?php if ($mensagemConflito !== ""): ?>
+                <article style="background-color: rgba(250, 46, 35, 0.18); border: 1px solid rgb(250, 46, 35); padding: 1vw 1.3vw; border-radius: 0.7vw; margin-bottom: 1.5vw;">
+                    <p style="color: rgb(250, 46, 35); font-size: 0.95vw;"><?php echo htmlspecialchars($mensagemConflito); ?></p>
+                </article>
+            <?php endif; ?>
+
+            <article class="cad-campos" style="margin-bottom: 1.5vw;">
+                <label class="campo-total">Escolha o álbum
+                    <select name="id_album" required onchange="if(this.value) window.location.href='../view/cadastrar_musica.html?id_album=' + this.value;">
+                        <option value="">Selecione um álbum</option>
+                        <?php while ($alb = mysqli_fetch_assoc($resAlbuns)): ?>
+                            <option value="<?php echo $alb['id_album']; ?>" <?php if($idAlbumPre == $alb['id_album']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($alb['titulo'] . " - " . $alb['nome_artista']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </label>
+            </article>
+
+            <?php if ($idAlbumPre > 0): ?>
+                <section style="background-color: rgb(26, 26, 26); border: 1px solid rgb(50, 50, 50); border-radius: 0.8vw; padding: 1.2vw 1.5vw; margin-bottom: 1.8vw;">
+                    <article style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8vw;">
+                        <h3 style="color: rgb(240, 250, 115); font-size: 1.05vw;">Faixas já existentes neste álbum</h3>
+                        <span style="color: rgb(160, 160, 160); font-size: 0.9vw;"><?php echo count($faixasExistentes); ?> cadastrada(s)</span>
+                    </article>
+
+                    <?php if (!empty($faixasExistentes)): ?>
+                        <ul class="lista-faixas">
+                            <?php foreach ($faixasExistentes as $fx): ?>
+                                <li>
+                                    <span class="faixa-num"><?php echo str_pad($fx['numero_faixa'], 2, '0', STR_PAD_LEFT); ?></span>
+                                    <span class="faixa-titulo"><?php echo htmlspecialchars($fx['titulo']); ?></span>
+                                    <span class="faixa-dur"><?php echo htmlspecialchars($fx['duracao']); ?></span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <p style="color: rgb(160, 160, 160); font-size: 0.95vw;">Este álbum ainda não possui nenhuma faixa cadastrada. Você pode começar pela faixa 01.</p>
+                    <?php endif; ?>
+                </section>
+            <?php endif; ?>
+
+            <section class="cad-faixas">
+                <h3>Novas faixas</h3>
+
+                <div id="lista-faixas">
+                    <article class="faixa-linha">
+                        <input class="faixa-tempo" type="number" name="numero[]" value="<?php echo $proximaFaixa; ?>" min="1" placeholder="Nº" required style="width: 4.5vw;">
+                        <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da música / faixa" required>
+                        <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00">
+                        <button class="faixa-remover" type="button">✕</button>
+                    </article>
+                </div>
+
+                <button class="faixa-add" type="button" onclick="adicionarFaixa()">
+                    + Adicionar outra faixa
+                </button>
+            </section>
+
+            <article class="cad-botoes">
+                <a href="<?php echo $idAlbumPre > 0 ? '../view/visualizar_album.html?id=' . $idAlbumPre : '../view/albuns.html?generos[]=1&generos[]=2&generos[]=3&generos[]=4&generos[]=5&generos[]=6'; ?>">
+                    <button class="button-contorno" type="button">Cancelar</button>
+                </a>
+
+                <button class="button-ama button-menor" type="submit" name="cadastrar_faixas">
+                    Salvar faixas
+                </button>
+            </article>
+        </form>
+    </section>
+
+    <script>
+        let proximoNumeroBase = <?php echo $proximaFaixa; ?>;
+
+        function adicionarFaixa() {
+            let lista = document.getElementById('lista-faixas');
+            let qtdLinhas = lista.querySelectorAll('.faixa-linha').length;
+            let numSugerido = proximoNumeroBase + qtdLinhas;
+            let faixa = document.createElement('article');
+            faixa.className = 'faixa-linha';
+            faixa.innerHTML = `
+                <input class="faixa-tempo" type="number" name="numero[]" value="${numSugerido}" min="1" placeholder="Nº" required style="width: 4.5vw;">
+                <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da música / faixa" required>
+                <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00">
+                <button class="faixa-remover" type="button">✕</button>
+            `;
+            lista.appendChild(faixa);
+        }
+
+        document.getElementById('lista-faixas').addEventListener('click', function(event) {
+            if (event.target.classList.contains('faixa-remover')) {
+                if (document.querySelectorAll('.faixa-linha').length > 1) {
+                    event.target.closest('.faixa-linha').remove();
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

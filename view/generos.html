@@ -1,3 +1,16 @@
+<?php
+    session_start();
+    require_once "../assets/processamento/funcoesDB.php";
+    $conexao = conectarBD();
+
+    $contagens = [];
+    $res = mysqli_query($conexao, "SELECT id_genero, COUNT(*) AS total FROM albuns GROUP BY id_genero");
+    if ($res) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $contagens[$row['id_genero']] = $row['total'];
+        }
+    }
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,17 +27,17 @@
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
-                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
+                <a class="ativo" href="../view/generos.html"><li>Gêneros</li></a>
                 <a href="../view/artistas.html"><li>Artistas</li></a>
                 <a href="../view/novidades.html"><li>Novidades</li></a>
             </ul>
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
@@ -34,12 +47,12 @@
 
         <main class="main-genero">
             <ul>
-                <li>Todos</li>
-                <li>Rock</li>
-                <li>MPB</li>
-                <li>Pop</li>
-                <li>Rap</li>
-                <li>Eletrônica</li>
+                <a href="../view/albuns.html?generos[]=1&generos[]=2&generos[]=3&generos[]=4&generos[]=5&generos[]=6" style="text-decoration:none; color:inherit;"><li>Todos</li></a>
+                <a href="../view/albuns.html?generos[]=1" style="text-decoration:none; color:inherit;"><li>Rock</li></a>
+                <a href="../view/albuns.html?generos[]=2" style="text-decoration:none; color:inherit;"><li>MPB</li></a>
+                <a href="../view/albuns.html?generos[]=3" style="text-decoration:none; color:inherit;"><li>Pop</li></a>
+                <a href="../view/albuns.html?generos[]=4" style="text-decoration:none; color:inherit;"><li>Rap</li></a>
+                <a href="../view/albuns.html?generos[]=6" style="text-decoration:none; color:inherit;"><li>Eletrônica</li></a>
             </ul>
         </main>
     </section>
@@ -48,22 +61,22 @@
         <article>
             <img src="../assets/img/disco_vinil.png" alt="vinil">
             <h1>Eletrônica</h1>
-            <p>28 álbuns</p>
-            <a href="../view/albuns.php"><button id="b-genero">Ver álbuns</button></a>
+            <p><?php echo $contagens[6] ?? 0; ?> álbuns</p>
+            <a href="../view/albuns.html?generos[]=6"><button id="b-genero">Ver álbuns</button></a>
         </article>
 
         <article>
             <img src="../assets/img/disco_vinil.png" alt="vinil">
             <h1>MPB</h1>
-            <p>54 álbuns</p>
-            <a href="../view/albuns.php"><button id="b-genero">Ver álbuns</button></a>
+            <p><?php echo $contagens[2] ?? 0; ?> álbuns</p>
+            <a href="../view/albuns.html?generos[]=2"><button id="b-genero">Ver álbuns</button></a>
         </article>
 
         <article>
             <img src="../assets/img/disco_vinil.png" alt="vinil">
             <h1>Pop</h1>
-            <p>37 álbuns</p>
-            <a href="../view/albuns.php"><button id="b-genero">Ver álbuns</button></a>
+            <p><?php echo $contagens[3] ?? 0; ?> álbuns</p>
+            <a href="../view/albuns.html?generos[]=3"><button id="b-genero">Ver álbuns</button></a>
         </article>
     </section>
 
@@ -71,22 +84,22 @@
         <article>
             <img src="../assets/img/disco_vinil.png" alt="vinil">
             <h1>Rap / Hip-Hop</h1>
-            <p>41 álbuns</p>
-            <a href="../view/albuns.php"><button id="b-genero">Ver álbuns</button></a>
+            <p><?php echo $contagens[4] ?? 0; ?> álbuns</p>
+            <a href="../view/albuns.html?generos[]=4"><button id="b-genero">Ver álbuns</button></a>
         </article>
 
         <article>
             <img src="../assets/img/disco_vinil.png" alt="vinil">
             <h1>Rap Nacional</h1>
-            <p>19 álbuns</p>
-            <a href="../view/albuns.php"><button id="b-genero">Ver álbuns</button></a>
+            <p><?php echo $contagens[5] ?? 0; ?> álbuns</p>
+            <a href="../view/albuns.html?generos[]=5"><button id="b-genero">Ver álbuns</button></a>
         </article>
 
         <article>
             <img src="../assets/img/disco_vinil.png" alt="vinil">
             <h1>Rock</h1>
-            <p>63 álbuns</p>
-            <a href="../view/albuns.php"><button id="b-genero">Ver álbuns</button></a>
+            <p><?php echo $contagens[1] ?? 0; ?> álbuns</p>
+            <a href="../view/albuns.html?generos[]=1"><button id="b-genero">Ver álbuns</button></a>
         </article>
     </section>
     

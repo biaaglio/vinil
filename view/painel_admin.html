@@ -1,0 +1,106 @@
+<?php
+session_start();
+require_once "../assets/processamento/funcoesDB.php";
+if (!usuarioEhAdmin()) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+$conexao = conectarBD();
+
+$totalAlbuns = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total FROM albuns"))['total'];
+$totalMusicas = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total FROM musicas"))['total'];
+$totalArtistas = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total FROM artistas"))['total'];
+$totalUsuarios = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total FROM usuarios"))['total'];
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+    <main>
+        <article class="main-dispo">
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
+        </article>
+
+        <article class="main-dispo">
+            <ul>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
+                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/novidades.html"><li>Novidades</li></a>
+            </ul>
+        </article>
+
+        <article class="main-dispo">
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+        </article>
+    </main>
+
+    <section class="all-gerenciar">
+        <section class="cab-gerenciar">
+            <article class="titulo-gerenciar">
+                <h1>Painel Administrativo</h1>
+                <p class="chip-itens">Acesso exclusivo Admin</p>
+            </article>
+        </section>
+
+        <article style="background-color: rgba(250, 46, 35, 0.12); border: 1px solid rgb(250, 46, 35); border-radius: 0.8vw; padding: 1.2vw 1.5vw; margin-bottom: 2vw;">
+            <h3 style="color: rgb(250, 46, 35); margin-bottom: 0.4vw; font-size: 1.1vw;">Atenção às dependências antes de excluir registros:</h3>
+            <p style="color: rgb(235, 235, 235); font-size: 0.95vw; line-height: 1.5;">
+                • <strong>Artistas:</strong> possuem <strong>álbuns</strong> vinculados. Para deletar um artista, é necessário deletar todos os álbuns dele antes.<br>
+                • <strong>Álbuns:</strong> possuem <strong>músicas/faixas</strong> vinculadas. Para deletar um álbum, é necessário deletar todas as faixas dele antes.<br>
+                • <strong>Músicas/Faixas:</strong> não possuem dependências e podem ser deletadas diretamente.
+            </p>
+        </article>
+
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(18vw, 1fr)); gap: 1.5vw;">
+            <article style="background-color: rgb(30, 30, 30); padding: 1.8vw; border-radius: 1vw; border: 1px solid rgb(55, 55, 55); display: flex; flex-direction: column; justify-content: space-between; gap: 1vw;">
+                <article>
+                    <span class="tag-genero"><?php echo $totalAlbuns; ?> cadastrados</span>
+                    <h2 style="color: rgb(235, 235, 235); margin: 0.8vw 0 0.4vw 0;">Gerenciar Álbuns</h2>
+                    <p style="color: rgb(160, 160, 160); font-size: 0.95vw;">Atualizar dados, trocar capas ou deletar álbuns (sem faixas vinculadas).</p>
+                </article>
+                <a href="../view/gerenciar_catalogo.html?aba=albuns"><button type="button" class="button-ama" style="width: 100%;">Abrir Álbuns</button></a>
+            </article>
+
+            <article style="background-color: rgb(30, 30, 30); padding: 1.8vw; border-radius: 1vw; border: 1px solid rgb(55, 55, 55); display: flex; flex-direction: column; justify-content: space-between; gap: 1vw;">
+                <article>
+                    <span class="tag-genero"><?php echo $totalMusicas; ?> cadastradas</span>
+                    <h2 style="color: rgb(235, 235, 235); margin: 0.8vw 0 0.4vw 0;">Gerenciar Músicas / Faixas</h2>
+                    <p style="color: rgb(160, 160, 160); font-size: 0.95vw;">Editar número, nome, duração ou deletar faixas dos álbuns.</p>
+                </article>
+                <a href="../view/gerenciar_catalogo.html?aba=musicas"><button type="button" class="button-ama" style="width: 100%;">Abrir Músicas</button></a>
+            </article>
+
+            <article style="background-color: rgb(30, 30, 30); padding: 1.8vw; border-radius: 1vw; border: 1px solid rgb(55, 55, 55); display: flex; flex-direction: column; justify-content: space-between; gap: 1vw;">
+                <article>
+                    <span class="tag-genero"><?php echo $totalArtistas; ?> cadastrados</span>
+                    <h2 style="color: rgb(235, 235, 235); margin: 0.8vw 0 0.4vw 0;">Gerenciar Artistas</h2>
+                    <p style="color: rgb(160, 160, 160); font-size: 0.95vw;">Atualizar biografia, foto ou deletar artistas (sem álbuns vinculados).</p>
+                </article>
+                <a href="../view/gerenciar_catalogo.html?aba=artistas"><button type="button" class="button-ama" style="width: 100%;">Abrir Artistas</button></a>
+            </article>
+
+            <article style="background-color: rgb(30, 30, 30); padding: 1.8vw; border-radius: 1vw; border: 1px solid rgb(55, 55, 55); display: flex; flex-direction: column; justify-content: space-between; gap: 1vw;">
+                <article>
+                    <span class="tag-genero"><?php echo $totalUsuarios; ?> cadastrados</span>
+                    <h2 style="color: rgb(235, 235, 235); margin: 0.8vw 0 0.4vw 0;">Usuários Cadastrados</h2>
+                    <p style="color: rgb(160, 160, 160); font-size: 0.95vw;">Editar dados, alterar permissão de administrador (adm) ou excluir usuários.</p>
+                </article>
+                <a href="../view/usuarios_cadastrados.html"><button type="button" class="button-ama" style="width: 100%;">Gerenciar Usuários</button></a>
+            </article>
+        </section>
+    </section>
+
+</body>
+</html>

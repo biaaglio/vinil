@@ -1,3 +1,10 @@
+<?php
+    session_start();
+    if (isset($_SESSION['id_usuario'])) {
+        header("Location: ../view/perfil_usuario.html");
+        exit;
+    }
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,7 +21,7 @@
 
         <article class="main-dispo">
            <ul>
-                <li><a href="../view/albuns.php">Álbuns</a></li>
+                <li><a href="../view/albuns.html">Álbuns</a></li>
                 <li><a href="../view/generos.html">Gêneros</a></li>
                 <li><a href="../view/artistas.html">Artistas</a></li>
                 <li><a href="../view/novidades.html">Novidades</a></li>
@@ -24,16 +31,26 @@
 
 
     <section class="sessao-login">
-            <section class="box-login">
+        <form class="box-login" method="POST" action="../assets/processamento/processa_login.php">
             <h1>Bem-Vindo(a)</h1>
-            <input placeholder="E-mail" type="email">
-            <input placeholder="Senha" type="password">
 
-            <button class="button-verm-cad">Logar</button>
+            <?php if (isset($_GET['erro'])): ?>
+                <p style="color: rgb(250, 46, 35); font-size: 0.9vw;">E-mail ou senha inválidos.</p>
+            <?php endif; ?>
+            <?php if (isset($_GET['cadastrado'])): ?>
+                <p style="color: rgb(240, 250, 115); font-size: 0.9vw;">Cadastro realizado com sucesso! Faça login.</p>
+            <?php endif; ?>
+            <?php if (isset($_GET['senha_alterada'])): ?>
+                <p style="color: rgb(240, 250, 115); font-size: 0.9vw;">Senha redefinida com sucesso! Faça login.</p>
+            <?php endif; ?>
+
+            <input name="email" placeholder="E-mail" type="email" required>
+            <input name="senha" placeholder="Senha" type="password" required>
+
+            <button type="submit" class="button-verm-cad">Logar</button>
             <a href="../view/cadastro_usuario.html"><p>Ainda sem cadastro? Cadastrar</p></a>
             <a href="../view/recuperar_senha.html"><p>Esqueceu a senha? Recuperar Senha</p></a>
-
-        </section>
+        </form>
 
         <img src="../assets/img/disco_vinil.png" alt="">
         <section id="img-destaque2"></section>

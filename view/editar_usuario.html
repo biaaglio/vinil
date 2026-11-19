@@ -1,0 +1,116 @@
+<?php
+session_start();
+require_once "../assets/processamento/funcoesDB.php";
+if (!usuarioEhAdmin()) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+
+$id = isset($_GET['id']) ? intval($_GET['id']) : intval($_POST['id_usuario'] ?? 0);
+
+if (isset($_POST['atualizar'])) {
+    atualizarUsuarioAdmin(
+        $id,
+        $_POST['nome'],
+        $_POST['email'],
+        $_POST['data_nascimento'],
+        $_POST['genero_usuario'],
+        $_POST['nivel_acesso'],
+        $_POST['nova_senha'] ?? ''
+    );
+
+    if ($id === intval($_SESSION['id_usuario'])) {
+        $_SESSION['nome_usuario'] = $_POST['nome'];
+        $_SESSION['nivel_acesso'] = ($_POST['nivel_acesso'] === 'adm') ? 'adm' : 'usuario';
+    }
+
+    header("Location: ../view/usuarios_cadastrados.html?atualizado=1");
+    exit;
+}
+
+$usuarioEdit = buscarUsuarioId($id);
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Usuário</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+    <main>
+        <article class="main-dispo">
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
+        </article>
+
+        <article class="main-dispo">
+            <ul>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
+                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/novidades.html"><li>Novidades</li></a>
+            </ul>
+        </article>
+
+        <article class="main-dispo">
+            <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+        </article>
+    </main>
+
+    <section class="sessao-cad-album">
+        <?php if ($usuarioEdit): ?>
+        <form class="box-cad-album" method="POST" action="../view/editar_usuario.html?id=<?php echo $usuarioEdit['id_usuario']; ?>">
+            <input type="hidden" name="id_usuario" value="<?php echo $usuarioEdit['id_usuario']; ?>">
+
+            <h1>Editar usuário e permissão</h1>
+
+            <article class="cad-campos">
+                <label class="campo">Nome
+                    <input type="text" name="nome" value="<?php echo htmlspecialchars($usuarioEdit['nome']); ?>" required>
+                </label>
+
+                <label class="campo">E-mail
+                    <input type="email" name="email" value="<?php echo htmlspecialchars($usuarioEdit['email']); ?>" required>
+                </label>
+
+                <label class="campo">Data de nascimento
+                    <input type="date" name="data_nascimento" value="<?php echo htmlspecialchars($usuarioEdit['data_nascimento'] ?? ''); ?>">
+                </label>
+
+                <label class="campo">Gênero
+                    <input type="text" name="genero_usuario" value="<?php echo htmlspecialchars($usuarioEdit['genero_usuario'] ?? ''); ?>">
+                </label>
+
+                <label class="campo">Nível de acesso (Permissão)
+                    <select name="nivel_acesso" required>
+                        <option value="usuario" <?php if($usuarioEdit['nivel_acesso'] === 'usuario') echo 'selected'; ?>>Usuário comum (usuario)</option>
+                        <option value="adm" <?php if($usuarioEdit['nivel_acesso'] === 'adm') echo 'selected'; ?>>Administrador (adm)</option>
+                    </select>
+                </label>
+
+                <label class="campo">Nova senha (opcional)
+                    <input type="password" name="nova_senha" placeholder="Deixe em branco para manter a atual">
+                </label>
+            </article>
+
+            <article class="cad-botoes">
+                <a href="../view/usuarios_cadastrados.html">
+                    <button class="button-contorno" type="button">Cancelar</button>
+                </a>
+
+                <button class="button-ama" type="submit" name="atualizar">
+                    Salvar alterações
+                </button>
+            </article>
+        </form>
+        <?php else: ?>
+            <p>Usuário não encontrado.</p>
+        <?php endif; ?>
+    </section>
+
+</body>
+</html>

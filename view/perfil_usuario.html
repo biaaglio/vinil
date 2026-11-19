@@ -1,3 +1,34 @@
+<?php
+    session_start();
+    if (!isset($_SESSION['id_usuario'])) {
+        header("Location: ../view/login_usuario.html");
+        exit;
+    }
+
+    require_once "../assets/processamento/funcoesDB.php";
+    $usuario = buscarUsuarioId($_SESSION['id_usuario']);
+
+    if (!$usuario && !empty($_SESSION['email_usuario'])) {
+        $usuario = buscarUsuarioEmail($_SESSION['email_usuario']);
+        if ($usuario) {
+            $_SESSION['id_usuario'] = $usuario['id_usuario'];
+            $_SESSION['nivel_acesso'] = $usuario['nivel_acesso'];
+        }
+    }
+
+    if (!$usuario) {
+        session_destroy();
+        header("Location: ../view/login_usuario.html");
+        exit;
+    }
+
+    $partesNome = explode(" ", trim($usuario['nome']));
+    $iniciais = strtoupper(substr($partesNome[0], 0, 1) . (isset($partesNome[1]) ? substr($partesNome[1], 0, 1) : ''));
+    $anoCadastro = !empty($usuario['criado_em']) ? date('Y', strtotime($usuario['criado_em'])) : '2026';
+    $dataNasc = !empty($usuario['data_nascimento']) ? date('d/m/Y', strtotime($usuario['data_nascimento'])) : 'Não informada';
+    $_SESSION['nivel_acesso'] = $usuario['nivel_acesso'];
+    $isAdmin = ($usuario['nivel_acesso'] ?? '') === 'adm';
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -10,14 +41,12 @@
 
     <main>
         <article class="main-dispo">
-            <a href="../view/home.html">
-                <img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo">
-            </a>
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
         </article>
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
                 <a href="../view/generos.html"><li>Gêneros</li></a>
                 <a href="../view/artistas.html"><li>Artistas</li></a>
                 <a href="../view/novidades.html"><li>Novidades</li></a>
@@ -25,7 +54,10 @@
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
+            <?php if ($isAdmin): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
             <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
             <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
@@ -37,18 +69,25 @@
             <a href="../view/home.html">Início</a> / <a class="atual">Meu perfil</a>
         </p>
 
-        <section class="perfil-artis">
+        <section class="perfil-artis" style="gap: 2vw; flex-wrap: wrap;">
             <article class="info-perfil">
-                <article class="avatar-perfil">NS</article>
+                <article class="avatar-perfil"><?php echo htmlspecialchars($iniciais); ?></article>
 
                 <article>
-                    <h1>Nome Sobrenome</h1>
-                    <p>nome.sobrenome@email.com</p>
-                    <p class="tag-genero">Membro desde 2026</p>
+                    <h1><?php echo htmlspecialchars($usuario['nome']); ?></h1>
+                    <p><?php echo htmlspecialchars($usuario['email']); ?></p>
+                    <p class="tag-genero">Membro desde <?php echo $anoCadastro; ?> <?php if($isAdmin) echo '· Administrador'; ?></p>
                 </article>
             </article>
 
-            <a href="../view/editar_perfil.html"><button class="button-fav">Editar perfil</button></a>
+            <article style="display: flex; align-items: center; gap: 1vw; flex-shrink: 0;">
+                <?php if ($isAdmin): ?>
+                    <a href="../view/painel_admin.html"><button type="button" class="button-verm button-menor">Painel Admin</button></a>
+                <?php endif; ?>
+                <a href="../view/cadastrar_album.html"><button type="button" class="button-ama button-menor">+ Álbum</button></a>
+                <a href="../view/cadastrar_musica.html"><button type="button" class="button-ama button-menor">+ Faixas</button></a>
+                <a href="../view/cadastrar_novo_artista.html"><button type="button" class="button-ama button-menor">+ Artista</button></a>
+            </article>
         </section>
 
         <article class="cab-secao">
@@ -59,29 +98,29 @@
         <section class="dados-perfil">
             <article class="dado-perfil">
                 <p>Nome</p>
-                <h3>Nome Sobrenome</h3>
+                <h3><?php echo htmlspecialchars($usuario['nome']); ?></h3>
             </article>
 
             <article class="dado-perfil">
                 <p>E-mail</p>
-                <h3>nome.sobrenome@email.com</h3>
+                <h3><?php echo htmlspecialchars($usuario['email']); ?></h3>
             </article>
 
             <article class="dado-perfil">
                 <p>Nascimento</p>
-                <h3>00/03/0000</h3>
+                <h3><?php echo $dataNasc; ?></h3>
             </article>
 
             <article class="dado-perfil">
-                <p>Gênero favorito</p>
-                <h3>Rock</h3>
+                <p>Gênero</p>
+                <h3><?php echo !empty($usuario['genero_usuario']) ? htmlspecialchars($usuario['genero_usuario']) : 'Não informado'; ?></h3>
             </article>
         </section>
 
-        <section class="acoes-perfil">
-            <a href="../view/recuperar_senha.html"><button class="button-fav">Alterar senha</button></a>
-            <a href="../view/curtidos_usuario.html"><button class="button-ama">Meus curtidos</button></a>
-            <a href="../view/login_usuario.html"><button class="button-comprar">Sair</button></a>
+        <section class="acoes-perfil" style="gap: 1.2vw;">
+            <a href="../view/recuperar_senha.html"><button type="button" class="button-fav">Alterar senha</button></a>
+            <a href="../view/curtidos_usuario.html"><button type="button" class="button-ama">Meus curtidos</button></a>
+            <a href="../assets/processamento/processa_logout.php"><button type="button" class="button-comprar">Sair</button></a>
         </section>
 
     </section>

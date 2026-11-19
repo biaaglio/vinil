@@ -1,0 +1,102 @@
+<?php
+session_start();
+require_once "../assets/processamento/funcoesDB.php";
+if (!usuarioEhAdmin()) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+$conexao = conectarBD();
+
+$id = isset($_GET['id']) ? intval($_GET['id']) : intval($_POST['id_musica'] ?? 0);
+
+if (isset($_POST['atualizar'])) {
+    atualizarMusica($id, $_POST['id_album'], $_POST['numero_faixa'], $_POST['titulo'], $_POST['duracao']);
+    header("Location: ../view/gerenciar_catalogo.html?aba=musicas&atualizado=1");
+    exit;
+}
+
+$musica = retornarMusicaId($id);
+$resAlbuns = mysqli_query($conexao, "SELECT id_album, titulo FROM albuns ORDER BY titulo ASC");
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Música / Faixa</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+    <main>
+        <article class="main-dispo">
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
+        </article>
+
+        <article class="main-dispo">
+            <ul>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
+                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/novidades.html"><li>Novidades</li></a>
+            </ul>
+        </article>
+
+        <article class="main-dispo">
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+        </article>
+    </main>
+
+    <section class="sessao-cad-album">
+        <?php if ($musica): ?>
+        <form class="box-cad-album" method="POST" action="../view/editar_musica.html?id=<?php echo $musica['id_musica']; ?>">
+            <input type="hidden" name="id_musica" value="<?php echo $musica['id_musica']; ?>">
+
+            <h1>Editar música / faixa</h1>
+
+            <article class="cad-campos">
+                <label class="campo-total">Álbum
+                    <select name="id_album" required>
+                        <?php while ($alb = mysqli_fetch_assoc($resAlbuns)): ?>
+                            <option value="<?php echo $alb['id_album']; ?>" <?php if($alb['id_album'] == $musica['id_album']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($alb['titulo']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </label>
+
+                <label class="campo">Número da faixa
+                    <input type="number" name="numero_faixa" min="1" value="<?php echo $musica['numero_faixa']; ?>" required>
+                </label>
+
+                <label class="campo">Duração
+                    <input type="text" name="duracao" value="<?php echo htmlspecialchars($musica['duracao']); ?>" placeholder="0:00">
+                </label>
+
+                <label class="campo-total">Título da música
+                    <input type="text" name="titulo" value="<?php echo htmlspecialchars($musica['titulo']); ?>" required>
+                </label>
+            </article>
+
+            <article class="cad-botoes">
+                <a href="../view/gerenciar_catalogo.html?aba=musicas">
+                    <button class="button-contorno" type="button">Cancelar</button>
+                </a>
+
+                <button class="button-ama" type="submit" name="atualizar">
+                    Salvar alterações
+                </button>
+            </article>
+        </form>
+        <?php else: ?>
+            <p>Música não encontrada.</p>
+        <?php endif; ?>
+    </section>
+
+</body>
+</html>

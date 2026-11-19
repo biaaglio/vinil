@@ -1,3 +1,19 @@
+<?php
+    session_start();
+    require_once "../assets/processamento/funcoesDB.php";
+    $conexao = conectarBD();
+
+    $filtro = isset($_GET['filtro']) ? $_GET['filtro'] : 'tudo';
+
+    $resAlbuns = mysqli_query($conexao, "SELECT albuns.*, artistas.nome AS nome_artista
+                                         FROM albuns
+                                         INNER JOIN artistas ON albuns.id_artista = artistas.id_artista
+                                         ORDER BY albuns.id_album DESC LIMIT 8");
+    $totalAlbunsGeral = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total FROM albuns"))['total'];
+
+    $resArtistas = mysqli_query($conexao, "SELECT * FROM artistas ORDER BY id_artista DESC LIMIT 4");
+    $totalArtistasGeral = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total FROM artistas"))['total'];
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -10,14 +26,12 @@
 
     <main>
         <article class="main-dispo">
-            <a href="../view/home.html">
-                <img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo">
-            </a>
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
         </article>
 
         <article class="main-dispo">
             <ul>
-                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
                 <a href="../view/generos.html"><li>Gêneros</li></a>
                 <a href="../view/artistas.html"><li>Artistas</li></a>
                 <a class="ativo" href="../view/novidades.html"><li>Novidades</li></a>
@@ -25,9 +39,9 @@
         </article>
 
         <article class="main-dispo">
-            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
@@ -39,144 +53,62 @@
         </article>
 
         <section class="chips-genero">
-            <button class="chip-genero chip-genero-ativo">Tudo</button>
-            <button class="chip-genero">Álbuns</button>
-            <button class="chip-genero">Artistas</button>
+            <a href="../view/novidades.html?filtro=tudo"><button type="button" class="chip-genero <?php if($filtro == 'tudo') echo 'chip-genero-ativo'; ?>">Tudo</button></a>
+            <a href="../view/novidades.html?filtro=albuns"><button type="button" class="chip-genero <?php if($filtro == 'albuns') echo 'chip-genero-ativo'; ?>">Álbuns</button></a>
+            <a href="../view/novidades.html?filtro=artistas"><button type="button" class="chip-genero <?php if($filtro == 'artistas') echo 'chip-genero-ativo'; ?>">Artistas</button></a>
         </section>
 
+        <?php if ($filtro == 'tudo' || $filtro == 'albuns'): ?>
         <section class="secao-novi">
             <article class="cab-secao">
                 <h2>Álbuns recentes</h2>
                 <hr>
-                <p>8 de 93</p>
+                <p>8 de <?php echo $totalAlbunsGeral; ?></p>
             </article>
 
             <section class="grade-albuns grade-curtidos">
-
-                <a class="album-item" href="../view/visualizar_album.php?id=93">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/skank3-muquiranada.jpg" alt="Calango">
-                        <p class="selo-novo">Novo</p>
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Calango</h3>
-                        <p>Skank · 1994</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
-                <a class="album-item" href="../view/visualizar_album.php?id=92">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/skank2-siderado.jpg" alt="Siderado">
-                        <p class="selo-novo">Novo</p>
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Siderado</h3>
-                        <p>Skank · 1998</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
-                <a class="album-item" href="../view/visualizar_album.php?id=91">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/skank1-cosmotron.jpg" alt="Cosmotron">
-                        <p class="selo-novo">Novo</p>
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Cosmotron</h3>
-                        <p>Skank · 2003</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
-                <a class="album-item" href="../view/visualizar_album.php?id=90">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/sepultura3-beneath-the-remains.jpg" alt="Beneath the Remains">
-                        <p class="selo-novo">Novo</p>
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Beneath the Remains</h3>
-                        <p>Sepultura · 1989</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
-                <a class="album-item" href="../view/visualizar_album.php?id=89">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/sepultura2-arise.jpg" alt="Arise">
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Arise</h3>
-                        <p>Sepultura · 1991</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
-                <a class="album-item" href="../view/visualizar_album.php?id=88">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/sepultura1-roots.jpg" alt="Roots">
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Roots</h3>
-                        <p>Sepultura · 1996</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
-                <a class="album-item" href="../view/visualizar_album.php?id=87">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/raimundos3-lapada-do-povo.jpg" alt="Lapadas do Povo">
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Lapadas do Povo</h3>
-                        <p>Raimundos · 1997</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
-                <a class="album-item" href="../view/visualizar_album.php?id=86">
-                    <article class="capa-curtido">
-                        <img class="capa-album" src="../assets/albuns/7-rock-nacional/raimundos2-raimundos.jpg" alt="Raimundos">
-                    </article>
-                    <article class="info-curtido">
-                        <h3>Raimundos</h3>
-                        <p>Raimundos · 1994</p>
-                        <p class="data-cad">Cadastrado em 11/11</p>
-                    </article>
-                </a>
-
+                <?php $i = 0; while ($alb = mysqli_fetch_assoc($resAlbuns)): $i++; ?>
+                    <a class="album-item" href="../view/visualizar_album.html?id=<?php echo $alb['id_album']; ?>">
+                        <article class="capa-curtido">
+                            <img class="capa-album" src="../assets/<?php echo htmlspecialchars($alb['capa_url']); ?>" alt="<?php echo htmlspecialchars($alb['titulo']); ?>">
+                            <?php if ($i <= 4): ?><p class="selo-novo">Novo</p><?php endif; ?>
+                        </article>
+                        <article class="info-curtido">
+                            <h3><?php echo htmlspecialchars($alb['titulo']); ?></h3>
+                            <p><?php echo htmlspecialchars($alb['nome_artista']); ?> · <?php echo $alb['ano_lancamento']; ?></p>
+                        </article>
+                    </a>
+                <?php endwhile; ?>
             </section>
         </section>
+        <?php endif; ?>
 
+        <?php if ($filtro == 'tudo' || $filtro == 'artistas'): ?>
         <section class="secao-novi">
             <article class="cab-secao">
                 <h2>Artistas recentes</h2>
                 <hr>
-                <p>4 de 34</p>
+                <p>4 de <?php echo $totalArtistasGeral; ?></p>
             </article>
 
             <article class="box-artis">
-                <article>
-                    <img src="../assets/albuns/7-rock-nacional/skank1-cosmotron.jpg" alt="Skank">
-                    <h3>Skank</h3>
-                </article>
-
-                <article>
-                    <img src="../assets/albuns/7-rock-nacional/sepultura1-roots.jpg" alt="Sepultura">
-                    <h3>Sepultura</h3>
-                </article>
-
-                <article>
-                    <img src="../assets/albuns/7-rock-nacional/raimundos1-lavo-ta-novo.jpg" alt="Raimundos">
-                    <h3>Raimundos</h3>
-                </article>
-
-                <article>
-                    <img src="../assets/albuns/3-eletronica/charliXcx3-brat.png" alt="Charli XCX">
-                    <h3>Charli XCX</h3>
-                </article>
+                <?php while ($art = mysqli_fetch_assoc($resArtistas)): ?>
+                    <?php
+                        $foto = $art['foto_url'];
+                        if (strpos($foto, 'assets/') === 0) {
+                            $foto = substr($foto, 7);
+                        }
+                    ?>
+                    <a href="../view/artistas.html?id_artista=<?php echo $art['id_artista']; ?>" style="text-decoration:none; color:inherit;">
+                        <article>
+                            <img src="../assets/<?php echo htmlspecialchars($foto); ?>" alt="<?php echo htmlspecialchars($art['nome']); ?>">
+                            <h3><?php echo htmlspecialchars($art['nome']); ?></h3>
+                        </article>
+                    </a>
+                <?php endwhile; ?>
             </article>
         </section>
+        <?php endif; ?>
 
     </section>
 

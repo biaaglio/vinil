@@ -1,9 +1,28 @@
+<?php
+session_start();
+require_once "../assets/processamento/funcoesDB.php";
+if (!usuarioEhAdmin()) {
+    header("Location: ../view/login_usuario.html");
+    exit;
+}
+
+$aba = isset($_GET['aba']) ? $_GET['aba'] : 'albuns';
+$busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
+
+$resAlbuns = retornarTodosAlbunsAdmin($busca);
+$resMusicas = retornarTodasMusicasAdmin($busca);
+$resArtistas = retornarArtistas($busca);
+
+$qtdAlbuns = $resAlbuns ? mysqli_num_rows($resAlbuns) : 0;
+$qtdMusicas = $resMusicas ? mysqli_num_rows($resMusicas) : 0;
+$qtdArtistas = $resArtistas ? mysqli_num_rows($resArtistas) : 0;
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Catálogo</title>
+    <title>Gerenciar Catálogo (Admin)</title>
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -14,129 +33,167 @@
 
         <article class="main-dispo">
             <ul>
-                <li><a href="../view/albuns.php">Álbuns</a></li>
-                <li><a href="../view/generos.html">Gêneros</a></li>
-                <li><a href="../view/artistas.html">Artistas</a></li>
-                <li><a href="../view/novidades.html">Novidades</a></li>
+                <a href="../view/albuns.html"><li>Álbuns</li></a>
+                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/novidades.html"><li>Novidades</li></a>
             </ul>
         </article>
 
         <article class="main-dispo">
-            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
     <section class="all-gerenciar">
+        <a class="voltar" href="../view/painel_admin.html">← Voltar para o Painel Admin</a>
 
         <section class="cab-gerenciar">
             <article class="titulo-gerenciar">
                 <h1>Gerenciar catálogo</h1>
-                <p class="chip-itens">6 itens</p>
+                <p class="chip-itens">Admin</p>
             </article>
 
             <article class="acoes-gerenciar">
-                <input class="busca-gerenciar" type="text" placeholder="Buscar">
-                <a href="../view/cadastrar_album.php"><button class="button-ama">+ Novo álbum</button></a>
+                <form method="GET" action="../view/gerenciar_catalogo.html" style="display:flex; gap:0.6vw;">
+                    <input type="hidden" name="aba" value="<?php echo htmlspecialchars($aba); ?>">
+                    <input class="busca-gerenciar" type="text" name="busca" value="<?php echo htmlspecialchars($busca); ?>" placeholder="Buscar..." onchange="this.form.submit()">
+                </form>
+                <a href="../view/cadastrar_album.html"><button type="button" class="button-ama button-menor">+ Álbum</button></a>
+                <a href="../view/cadastrar_musica.html"><button type="button" class="button-ama button-menor">+ Faixas</button></a>
+                <a href="../view/cadastrar_novo_artista.html"><button type="button" class="button-ama button-menor">+ Artista</button></a>
             </article>
         </section>
+
+        <?php if (isset($_GET['erro_dep']) && $_GET['erro_dep'] == 'artista'): ?>
+            <article style="background-color: rgba(250, 46, 35, 0.18); border: 1px solid rgb(250, 46, 35); padding: 1vw 1.4vw; border-radius: 0.7vw; margin-bottom: 1.5vw;">
+                <strong style="color: rgb(250, 46, 35);">Atenção (Dependência encontrada):</strong>
+                <span style="color: rgb(235, 235, 235);"> Não é possível deletar este artista porque ele ainda possui <strong><?php echo intval($_GET['qtd'] ?? 1); ?> álbum(ns)</strong> vinculado(s). Delete os álbuns deste artista primeiro na aba "Álbuns"!</span>
+            </article>
+        <?php elseif (isset($_GET['erro_dep']) && $_GET['erro_dep'] == 'album'): ?>
+            <article style="background-color: rgba(250, 46, 35, 0.18); border: 1px solid rgb(250, 46, 35); padding: 1vw 1.4vw; border-radius: 0.7vw; margin-bottom: 1.5vw;">
+                <strong style="color: rgb(250, 46, 35);">Atenção (Dependência encontrada):</strong>
+                <span style="color: rgb(235, 235, 235);"> Não é possível deletar este álbum porque ele ainda possui <strong><?php echo intval($_GET['qtd'] ?? 1); ?> música(s)/faixa(s)</strong> cadastrada(s). Delete todas as faixas deste álbum primeiro na aba "Músicas / Faixas"!</span>
+            </article>
+        <?php elseif (isset($_GET['excluido'])): ?>
+            <article style="background-color: rgba(240, 250, 115, 0.15); border: 1px solid rgb(240, 250, 115); padding: 0.9vw 1.4vw; border-radius: 0.7vw; margin-bottom: 1.5vw;">
+                <p style="color: rgb(240, 250, 115);">Item removido com sucesso!</p>
+            </article>
+        <?php elseif (isset($_GET['atualizado'])): ?>
+            <article style="background-color: rgba(240, 250, 115, 0.15); border: 1px solid rgb(240, 250, 115); padding: 0.9vw 1.4vw; border-radius: 0.7vw; margin-bottom: 1.5vw;">
+                <p style="color: rgb(240, 250, 115);">Alterações salvas com sucesso!</p>
+            </article>
+        <?php endif; ?>
 
         <section class="abas-gerenciar">
-            <a class="aba aba-ativa" href="gerenciar_catalogo.html">Álbuns (6)</a>
-            <a class="aba" href="#">Artistas (5)</a>
-            <a class="aba" href="#">Faixas (6)</a>
+            <a class="aba <?php if($aba == 'albuns') echo 'aba-ativa'; ?>" href="../view/gerenciar_catalogo.html?aba=albuns">Álbuns (<?php echo $qtdAlbuns; ?>)</a>
+            <a class="aba <?php if($aba == 'musicas') echo 'aba-ativa'; ?>" href="../view/gerenciar_catalogo.html?aba=musicas">Músicas / Faixas (<?php echo $qtdMusicas; ?>)</a>
+            <a class="aba <?php if($aba == 'artistas') echo 'aba-ativa'; ?>" href="../view/gerenciar_catalogo.html?aba=artistas">Artistas (<?php echo $qtdArtistas; ?>)</a>
         </section>
 
-        <section class="tabela-cab">
-            <p>#</p>
-            <p></p>
-            <p>Título</p>
-            <p>Artista</p>
-            <p>Gênero</p>
-            <p>Ano</p>
-            <p></p>
-        </section>
+        <?php if ($aba == 'albuns'): ?>
+            <p style="color: rgb(160, 160, 160); font-size: 0.9vw; margin-bottom: 1vw;">
+                * Lembrete: antes de deletar um <strong>Álbum</strong>, é necessário deletar todas as suas <strong>músicas/faixas</strong> na aba Músicas.
+            </p>
 
-        <section class="tabela-gerenciar">
+            <section class="tabela-cab">
+                <p>#</p>
+                <p></p>
+                <p>Título</p>
+                <p>Artista</p>
+                <p>Gênero</p>
+                <p>Ano</p>
+                <p></p>
+            </section>
 
-            <article class="linha-gerenciar">
-                <p class="num-linha">01</p>
-                <img src="../assets/img/thedoors.jpg" alt="capa">
-                <h3>The Wall</h3>
-                <p>Pink Floyd</p>
-                <p>Rock</p>
-                <p>1979</p>
-                <article class="botoes-linha">
-                    <a href="../view/editar_album.html"><button class="btn-acao btn-editar">✎</button></a>
-                    <a href="#"><button class="btn-acao btn-excluir">✕</button></a>
-                </article>
-            </article>
+            <section class="tabela-gerenciar">
+                <?php while ($alb = mysqli_fetch_assoc($resAlbuns)): ?>
+                    <article class="linha-gerenciar">
+                        <p class="num-linha"><?php echo $alb['id_album']; ?></p>
+                        <img src="../assets/<?php echo htmlspecialchars($alb['capa_url']); ?>" alt="capa">
+                        <h3><?php echo htmlspecialchars($alb['titulo']); ?></h3>
+                        <p><?php echo htmlspecialchars($alb['nome_artista']); ?></p>
+                        <p><?php echo htmlspecialchars($alb['nome_genero']); ?></p>
+                        <p><?php echo $alb['ano_lancamento']; ?></p>
+                        <article class="botoes-linha">
+                            <a href="../view/editar_album.html?id=<?php echo $alb['id_album']; ?>" title="Editar álbum"><button type="button" class="btn-acao btn-editar">✎</button></a>
+                            <a href="../assets/processamento/processa_excluir.php?tipo=album&id=<?php echo $alb['id_album']; ?>" onclick="return confirm('Deseja excluir este álbum? Lembre-se: se ele tiver faixas cadastradas, você precisará deletar as faixas antes.');" title="Excluir álbum"><button type="button" class="btn-acao btn-excluir">✕</button></a>
+                        </article>
+                    </article>
+                <?php endwhile; ?>
+            </section>
 
-            <article class="linha-gerenciar">
-                <p class="num-linha">02</p>
-                <img src="../assets/img/thedoors.jpg" alt="capa">
-                <h3>Animals</h3>
-                <p>Pink Floyd</p>
-                <p>Rock</p>
-                <p>1977</p>
-                <article class="botoes-linha">
-                    <a href="../view/editar_album.html"><button class="btn-acao btn-editar">✎</button></a>
-                    <a href=""><button class="btn-acao btn-excluir">✕</button></a>
-                </article>
-            </article>
+        <?php elseif ($aba == 'musicas'): ?>
+            <section class="tabela-cab">
+                <p>#</p>
+                <p></p>
+                <p>Música / Faixa</p>
+                <p>Álbum</p>
+                <p>Artista</p>
+                <p>Duração</p>
+                <p></p>
+            </section>
 
-            <article class="linha-gerenciar">
-                <p class="num-linha">03</p>
-                <img src="../assets/img/thedoors.jpg" alt="capa">
-                <h3>Led Zeppelin IV</h3>
-                <p>Led Zeppelin</p>
-                <p>Rock</p>
-                <p>1971</p>
-                <article class="botoes-linha">
-                    <a href="../view/editar_album.html"><button class="btn-acao btn-editar">✎</button></a>
-                    <a href="#"><button class="btn-acao btn-excluir">✕</button></a>
-                </article>
-            </article>
+            <section class="tabela-gerenciar">
+                <?php while ($mus = mysqli_fetch_assoc($resMusicas)): ?>
+                    <article class="linha-gerenciar">
+                        <p class="num-linha"><?php echo str_pad($mus['numero_faixa'], 2, '0', STR_PAD_LEFT); ?></p>
+                        <img src="../assets/<?php echo htmlspecialchars($mus['capa_url']); ?>" alt="capa">
+                        <h3><?php echo htmlspecialchars($mus['titulo']); ?></h3>
+                        <p><?php echo htmlspecialchars($mus['titulo_album']); ?></p>
+                        <p><?php echo htmlspecialchars($mus['nome_artista']); ?></p>
+                        <p><?php echo htmlspecialchars($mus['duracao']); ?></p>
+                        <article class="botoes-linha">
+                            <a href="../view/editar_musica.html?id=<?php echo $mus['id_musica']; ?>" title="Editar faixa"><button type="button" class="btn-acao btn-editar">✎</button></a>
+                            <a href="../assets/processamento/processa_excluir.php?tipo=musica&id=<?php echo $mus['id_musica']; ?>" onclick="return confirm('Deseja excluir esta música/faixa?');" title="Excluir faixa"><button type="button" class="btn-acao btn-excluir">✕</button></a>
+                        </article>
+                    </article>
+                <?php endwhile; ?>
+            </section>
 
-            <article class="linha-gerenciar">
-                <p class="num-linha">04</p>
-                <img src="../assets/img/thedoors.jpg" alt="capa">
-                <h3>Nevermind</h3>
-                <p>Nirvana</p>
-                <p>Rock</p>
-                <p>1991</p>
-                <article class="botoes-linha">
-                    <a href="../view/editar_album.html"><button class="btn-acao btn-editar">✎</button></a>
-                    <a href="#"><button class="btn-acao btn-excluir">✕</button></a>
-                </article>
-            </article>
+        <?php elseif ($aba == 'artistas'): ?>
+            <p style="color: rgb(160, 160, 160); font-size: 0.9vw; margin-bottom: 1vw;">
+                * Lembrete: antes de deletar um <strong>Artista</strong>, é necessário deletar todos os <strong>álbuns</strong> vinculados a ele.
+            </p>
 
-            <article class="linha-gerenciar">
-                <p class="num-linha">05</p>
-                <img src="../assets/img/thedoors.jpg" alt="capa">
-                <h3>A Night at the Opera</h3>
-                <p>Queen</p>
-                <p>Rock</p>
-                <p>1975</p>
-                <article class="botoes-linha">
-                    <a href="../view/editar_album.html"><button class="btn-acao btn-editar">✎</button></a>
-                    <a href="#"><button class="btn-acao btn-excluir">✕</button></a>
-                </article>
-            </article>
+            <section class="tabela-cab">
+                <p>#</p>
+                <p></p>
+                <p>Nome do Artista</p>
+                <p>Sigla</p>
+                <p>Biografia</p>
+                <p></p>
+                <p></p>
+            </section>
 
-            <article class="linha-gerenciar">
-                <p class="num-linha">06</p>
-                <img src="../assets/img/thedoors.jpg" alt="capa">
-                <h3>Back in Black</h3>
-                <p>AC/DC</p>
-                <p>Rock</p>
-                <p>1980</p>
-                <article class="botoes-linha">
-                    <a href="../view/editar_album.html"><button class="btn-acao btn-editar">✎</button></a>
-                    <a href="#"><button class="btn-acao btn-excluir">✕</button></a>
-                </article>
-            </article>
+            <section class="tabela-gerenciar">
+                <?php while ($art = mysqli_fetch_assoc($resArtistas)): ?>
+                    <?php
+                        $foto = $art['foto_url'];
+                        if (strpos($foto, 'assets/') === 0) {
+                            $foto = substr($foto, 7);
+                        }
+                    ?>
+                    <article class="linha-gerenciar">
+                        <p class="num-linha"><?php echo $art['id_artista']; ?></p>
+                        <img src="../assets/<?php echo htmlspecialchars($foto); ?>" alt="foto">
+                        <h3><?php echo htmlspecialchars($art['nome']); ?></h3>
+                        <p><?php echo htmlspecialchars($art['sigla']); ?></p>
+                        <p style="grid-column: span 2; font-size: 0.95vw;"><?php echo htmlspecialchars(mb_strimwidth($art['biografia'], 0, 70, '...')); ?></p>
+                        <article class="botoes-linha">
+                            <a href="../view/editar_artista.html?id=<?php echo $art['id_artista']; ?>" title="Editar artista"><button type="button" class="btn-acao btn-editar">✎</button></a>
+                            <a href="../assets/processamento/processa_excluir.php?tipo=artista&id=<?php echo $art['id_artista']; ?>" onclick="return confirm('Deseja excluir este artista? Lembre-se: se ele tiver álbuns cadastrados, você precisará deletar os álbuns antes.');" title="Excluir artista"><button type="button" class="btn-acao btn-excluir">✕</button></a>
+                        </article>
+                    </article>
+                <?php endwhile; ?>
+            </section>
+        <?php endif; ?>
 
-        </section>
     </section>
 
 </body>

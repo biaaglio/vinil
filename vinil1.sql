@@ -1388,8 +1388,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `data_nascimento`, `genero_usuario`, `senha_hash`, `nivel_acesso`, `criado_em`) VALUES
-(1, 'Administrador', 'admin@vinil.com', '2000-01-01', 'Masculino', '$2y$10$hashExemploAdm', 'adm', '2026-11-11 12:55:00'),
-(2, 'Cliente Colecionador', 'usuario@email.com', '2005-05-15', 'Masculino', '$2y$10$hashExemploUser', 'usuario', '2026-11-11 12:55:00');
+(1, 'Administrador', 'admin@vinil.com', '2000-01-01', 'Masculino', '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', 'adm', '2026-11-11 12:55:00'),
+(2, 'Cliente Colecionador', 'usuario@email.com', '2005-05-15', 'Masculino', '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', 'usuario', '2026-11-11 12:55:00');
 
 --
 -- Índices para tabelas despejadas
@@ -1431,6 +1431,10 @@ ALTER TABLE `indicacoes`
 ALTER TABLE `musicas`
   ADD PRIMARY KEY (`id_musica`);
 
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id_usuario`),
+  ADD UNIQUE KEY `email` (`email`);
+
 --
 -- AUTO_INCREMENT de tabelas despejadas
 --
@@ -1470,6 +1474,20 @@ ALTER TABLE `indicacoes`
 --
 ALTER TABLE `musicas`
   MODIFY `id_musica` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1076;
+
+ALTER TABLE `usuarios`
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+CREATE TABLE IF NOT EXISTS `comentarios` (
+  `id_comentario` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `id_album` int(11) NOT NULL,
+  `comentario` text NOT NULL,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_comentario`),
+  UNIQUE KEY `unico_usuario_album` (`id_usuario`, `id_album`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

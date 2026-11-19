@@ -1,0 +1,201 @@
+<?php
+    session_start();
+    require_once "../assets/processamento/funcoesDB.php";
+
+    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    $listaAlbuns = retornarAlbumId($id);
+    $album = $listaAlbuns ? mysqli_fetch_assoc($listaAlbuns) : null;
+
+    $curtido = false;
+    $meuComentario = null;
+    if ($album && isset($_SESSION['id_usuario'])) {
+        $curtido = verificarCurtida($_SESSION['id_usuario'], $id);
+        $meuComentario = buscarComentarioUsuarioAlbum($_SESSION['id_usuario'], $id);
+    }
+
+    $listaComentarios = $album ? retornarComentariosAlbum($id) : false;
+    $totalComentarios = $listaComentarios ? mysqli_num_rows($listaComentarios) : 0;
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $album ? htmlspecialchars($album['titulo']) : 'Visualizar Álbum'; ?></title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <main>
+        <article class="main-dispo">
+            <a href="../view/home.html"><img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo"></a>
+        </article>
+
+        <article class="main-dispo">
+            <ul>
+                <a class="ativo" href="../view/albuns.html"><li>Álbuns</li></a>
+                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/novidades.html"><li>Novidades</li></a>
+            </ul>
+        </article>
+
+        <article class="main-dispo">
+            <?php if (($_SESSION['nivel_acesso'] ?? '') === 'adm'): ?>
+                <a href="../view/painel_admin.html"><button type="button" class="button-ama button-menor">Painel Admin</button></a>
+            <?php endif; ?>
+            <a href="../view/artistas.html"><img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/curtidos_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/perfil_usuario.html' : '../view/login_usuario.html'; ?>"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+        </article>
+    </main>
+
+    <section class="all-album">
+        <a class="voltar" href="../view/albuns.html?generos[]=1&generos[]=2&generos[]=3&generos[]=4&generos[]=5&generos[]=6">← Voltar para álbuns</a>
+
+        <?php if ($album): ?>
+            <section class="album-topo">
+                <article class="album-capa-box">
+                    <div class="album-disco"></div>
+                    <img class="album-capa" src="../assets/<?php echo htmlspecialchars($album['capa_url']); ?>" alt="capa álbum">
+                </article>
+
+                <article class="album-info">
+                    <span class="tag-genero"><?php echo htmlspecialchars($album['nome_genero']); ?></span>
+                    <h1><?php echo htmlspecialchars($album['titulo']); ?></h1>
+                    <a class="album-artista" href="../view/artistas.html?id_artista=<?php echo $album['id_artista']; ?>"><?php echo htmlspecialchars($album['nome_artista']); ?> →</a>
+
+                    <section class="album-dados">
+                        <article>
+                            <p>Ano</p>
+                            <h3><?php echo htmlspecialchars($album['ano_lancamento']); ?></h3>
+                        </article>
+
+                        <article>
+                            <p>Gravadora</p>
+                            <h3><?php echo !empty($album['gravadora']) ? htmlspecialchars($album['gravadora']) : 'Não informada'; ?></h3>
+                        </article>
+
+                        <?php if (!empty($album['formato'])): ?>
+                        <article>
+                            <p>Formato</p>
+                            <h3><?php echo htmlspecialchars($album['formato']); ?></h3>
+                        </article>
+                        <?php endif; ?>
+
+                        <?php if (!empty($album['condicao'])): ?>
+                        <article>
+                            <p>Condição</p>
+                            <h3><?php echo htmlspecialchars($album['condicao']); ?></h3>
+                        </article>
+                        <?php endif; ?>
+                    </section>
+
+                    <p class="album-desc"><?php echo htmlspecialchars($album['descricao']); ?></p>
+
+                    <section class="album-botoes">
+                        <?php if (!empty($album['link_spotify'])): ?>
+                            <a href="<?php echo htmlspecialchars($album['link_spotify']); ?>" target="_blank"><button type="button" class="button-ama-album">▶ Ouvir</button></a>
+                        <?php endif; ?>
+
+                        <?php if (!empty($album['link_compra'])): ?>
+                            <a href="<?php echo htmlspecialchars($album['link_compra']); ?>" target="_blank"><button type="button" class="button-comprar">Comprar</button></a>
+                        <?php endif; ?>
+
+                        <a href="../assets/processamento/processa_curtir.php?id=<?php echo $album['id_album']; ?>">
+                            <button type="button" class="button-curtir" style="<?php echo $curtido ? 'color: rgb(250, 46, 35); border: 1px solid rgb(250, 46, 35);' : 'color: rgb(235, 235, 235); border: 1px solid rgb(80, 80, 80);'; ?>">
+                                <?php echo $curtido ? '♥ Curtido' : '♡ Curtir'; ?>
+                            </button>
+                        </a>
+                    </section>
+                </article>
+            </section>
+
+            <?php
+                $listaMusicas = retornarMusicasAlbum($id);
+                $totalMusicas = $listaMusicas ? mysqli_num_rows($listaMusicas) : 0;
+            ?>
+
+            <article class="cab-secao">
+                <h1>Faixas</h1>
+                <hr>
+                <p><?php echo $totalMusicas; ?> faixas</p>
+                <a href="<?php echo isset($_SESSION['id_usuario']) ? '../view/cadastrar_musica.html?id_album=' . $album['id_album'] : '../view/login_usuario.html'; ?>">
+                    <button type="button" class="button-ama button-menor">+ Faixas</button>
+                </a>
+            </article>
+
+            <ul class="lista-faixas">
+                <?php if ($totalMusicas > 0): ?>
+                    <?php while($musica = mysqli_fetch_assoc($listaMusicas)): ?>
+                        <li>
+                            <span class="faixa-num"><?php echo str_pad($musica['numero_faixa'], 2, '0', STR_PAD_LEFT); ?></span>
+                            <span class="faixa-titulo"><?php echo htmlspecialchars($musica['titulo']); ?></span>
+                            <span class="faixa-dur"><?php echo htmlspecialchars($musica['duracao']); ?></span>
+                        </li>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <li><span class="faixa-titulo">Nenhuma faixa cadastrada para este álbum.</span></li>
+                <?php endif; ?>
+            </ul>
+
+            <section id="comentarios" style="margin-top: 3vw;">
+                <article class="cab-secao">
+                    <h1>Comentários</h1>
+                    <hr>
+                    <p><?php echo $totalComentarios; ?> comentário(s)</p>
+                </article>
+
+                <?php if (isset($_GET['coment_ok'])): ?>
+                    <p style="color: rgb(240, 250, 115); margin-bottom: 1vw;">Seu comentário foi publicado com sucesso!</p>
+                <?php elseif (isset($_GET['coment_excluido'])): ?>
+                    <p style="color: rgb(182, 182, 182); margin-bottom: 1vw;">Seu comentário foi removido. Você pode escrever um novo se desejar.</p>
+                <?php elseif (isset($_GET['coment_erro'])): ?>
+                    <p style="color: rgb(250, 46, 35); margin-bottom: 1vw;">Você já possui um comentário publicado neste álbum ou o texto estava vazio.</p>
+                <?php endif; ?>
+
+                <?php if (!isset($_SESSION['id_usuario'])): ?>
+                    <article style="background-color: rgb(30, 30, 30); padding: 1.2vw 1.5vw; border-radius: 0.8vw; margin-bottom: 1.5vw; display: flex; justify-content: space-between; align-items: center;">
+                        <p style="color: rgb(182, 182, 182);">Faça login para deixar seu comentário único neste álbum.</p>
+                        <a href="../view/login_usuario.html"><button type="button" class="button-ama button-menor">Fazer login</button></a>
+                    </article>
+                <?php elseif ($meuComentario): ?>
+                    <article style="background-color: rgb(30, 30, 30); padding: 1.2vw 1.5vw; border-radius: 0.8vw; margin-bottom: 1.5vw; border-left: 0.25vw solid rgb(240, 250, 115); display: flex; justify-content: space-between; align-items: center; gap: 1vw;">
+                        <p style="color: rgb(235, 235, 235);">Você já publicou seu comentário único neste álbum.</p>
+                        <a href="../assets/processamento/processa_comentario.php?acao=excluir&id_album=<?php echo $album['id_album']; ?>" onclick="return confirm('Deseja remover seu comentário deste álbum?');">
+                            <button type="button" class="button-comprar button-menor">Excluir meu comentário</button>
+                        </a>
+                    </article>
+                <?php else: ?>
+                    <form method="POST" action="../assets/processamento/processa_comentario.php" style="background-color: rgb(30, 30, 30); padding: 1.5vw; border-radius: 0.8vw; margin-bottom: 1.8vw;">
+                        <input type="hidden" name="id_album" value="<?php echo $album['id_album']; ?>">
+                        <label style="display: block; color: rgb(235, 235, 235); margin-bottom: 0.6vw; font-size: 1vw;">
+                            Deixe seu comentário sobre este álbum (1 comentário por usuário):
+                        </label>
+                        <textarea name="comentario" rows="3" placeholder="Escreva o que você achou deste disco..." required style="width: 100%; box-sizing: border-box; background-color: rgb(20, 20, 20); color: rgb(235, 235, 235); border: 1px solid rgb(65, 65, 65); border-radius: 0.5vw; padding: 0.8vw; font-size: 0.95vw; margin-bottom: 0.8vw;"></textarea>
+                        <button type="submit" class="button-ama button-menor">Publicar comentário</button>
+                    </form>
+                <?php endif; ?>
+
+                <section style="display: flex; flex-direction: column; gap: 0.8vw;">
+                    <?php if ($totalComentarios > 0): ?>
+                        <?php while ($com = mysqli_fetch_assoc($listaComentarios)): ?>
+                            <article style="background-color: rgb(26, 26, 26); padding: 1.1vw 1.4vw; border-radius: 0.7vw; border: 1px solid rgb(45, 45, 45);">
+                                <article style="display: flex; justify-content: space-between; margin-bottom: 0.4vw;">
+                                    <strong style="color: rgb(240, 250, 115); font-size: 0.98vw;"><?php echo htmlspecialchars($com['nome_usuario']); ?></strong>
+                                    <span style="color: rgb(120, 120, 120); font-size: 0.85vw;"><?php echo date('d/m/Y H:i', strtotime($com['criado_em'])); ?></span>
+                                </article>
+                                <p style="color: rgb(225, 225, 225); font-size: 0.95vw; line-height: 1.4;"><?php echo nl2br(htmlspecialchars($com['comentario'])); ?></p>
+                            </article>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p style="color: rgb(140, 140, 140);">Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+                    <?php endif; ?>
+                </section>
+            </section>
+        <?php else: ?>
+            <p style="margin-top: 2vw;">Álbum não encontrado.</p>
+        <?php endif; ?>
+    </section>
+
+</body>
+</html>
