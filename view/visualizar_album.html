@@ -69,25 +69,11 @@
                             <p>Ano</p>
                             <h3><?php echo htmlspecialchars($album['ano_lancamento']); ?></h3>
                         </article>
-
+                    
                         <article>
                             <p>Gravadora</p>
                             <h3><?php echo !empty($album['gravadora']) ? htmlspecialchars($album['gravadora']) : 'Não informada'; ?></h3>
                         </article>
-
-                        <?php if (!empty($album['formato'])): ?>
-                        <article>
-                            <p>Formato</p>
-                            <h3><?php echo htmlspecialchars($album['formato']); ?></h3>
-                        </article>
-                        <?php endif; ?>
-
-                        <?php if (!empty($album['condicao'])): ?>
-                        <article>
-                            <p>Condição</p>
-                            <h3><?php echo htmlspecialchars($album['condicao']); ?></h3>
-                        </article>
-                        <?php endif; ?>
                     </section>
 
                     <p class="album-desc"><?php echo htmlspecialchars($album['descricao']); ?></p>

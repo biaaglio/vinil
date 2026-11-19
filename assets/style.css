@@ -714,6 +714,9 @@ ul a:hover{
 .main-dispo ul a.ativo{
     color: rgb(250, 46, 35);
 }
+.main-dispo a:has(+ a .icon) .button-menor{
+    margin-right: 1vw;
+}
 .all-artis{
     margin: 3.33vw 10vw 3.33vw 10.33vw;
 }
@@ -1133,6 +1136,9 @@ select{
 .album-info{
     flex: 1;
 }
+.album-info h1{
+    color: rgb(235, 235, 235);
+}
 .tag-genero{
     display: inline-block;
     background-color: rgb(240, 250, 115);
@@ -1140,6 +1146,7 @@ select{
     font-size: 0.8vw;
     font-weight: bold;
     border-radius: 2vw;
+    padding: 0.3vw 0.9vw;
 }
 .album-artista{
     color: rgb(250, 46, 35);
@@ -1251,6 +1258,7 @@ select{
     padding: 0.65vw 1.35vw;
     border-radius: 0.5vw;
     white-space: nowrap;
+    margin-left: 1vw;
 }
 .all-albuns{
     margin: 2vw 9.2vw 3.33vw 9.2vw;
@@ -1366,6 +1374,9 @@ select{
 .cab-secao h2{
     color: rgb(235, 235, 235);
     font-size: 1.2vw;
+}
+.cab-secao .button-menor{
+    margin-left: 1vw;
 }
 .grade-albuns{
     display: grid;
