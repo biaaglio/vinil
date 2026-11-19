@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Álbum</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+    <main>
+        <article class="main-dispo">
+            <a href="../view/home.html">
+                <img class="logo" src="../assets/img/logo_vinil_fundo_transparente.png" alt="logo">
+            </a>
+        </article>
+
+        <article class="main-dispo">
+            <ul>
+                <a href="../view/albuns.php"><li>Álbuns</li></a>
+                <a href="../view/generos.html"><li>Gêneros</li></a>
+                <a href="../view/artistas.html"><li>Artistas</li></a>
+                <a href="../view/novidades.html"><li>Novidades</li></a>
+            </ul>
+        </article>
+
+        <article class="main-dispo">
+            <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
+            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
+        </article>
+    </main>
+
+    <section class="sessao-cad-album">
+
+        <form class="box-cad-album" method="POST" action="" enctype="multipart/form-data">
+
+            <h1>Editar álbum</h1>
+
+            <section class="cad-album-topo">
+
+                <article class="cad-capa-box">
+                    <label class="cad-capa" for="capa">
+                        <img class="capa-atual" src="../assets/img/thedoors.jpg" alt="capa atual">
+                        <img class="icone-upload" src="../assets/img/icons-upload.png" alt="">
+                        <p>Arraste a capa aqui<br>ou clique para trocar</p>
+                    </label>
+                    <input type="file" id="capa" name="capa" accept="image/png, image/jpeg" hidden>
+
+                    <small>JPG ou PNG</small>
+                </article>
+
+                <article class="cad-campos">
+
+                    <label class="campo-total">Título do álbum
+                        <input type="text" name="titulo" placeholder="Título do álbum" value="Led Zeppelin IV" required>
+                    </label>
+
+                    <label class="campo">Artista
+                        <select name="idArtista" required>
+                            <option value="">Selecione um artista</option>
+                            <option value="1">Pink Floyd</option>
+                            <option value="2" selected>Led Zeppelin</option>
+                            <option value="3">Aerosmith</option>
+                        </select>
+                    </label>
+
+                    <label class="campo">Gênero
+                        <select name="idGenero" required>
+                            <option value="">Selecione um gênero</option>
+                            <option value="1" selected>Rock</option>
+                            <option value="2">MPB</option>
+                            <option value="3">Pop</option>
+                            <option value="4">Rap / Hip-Hop</option>
+                        </select>
+                    </label>
+
+                    <label class="campo">Ano de lançamento
+                        <input type="number" name="ano" min="1900" max="2100" placeholder="Ano" value="1971" required>
+                    </label>
+
+                    <label class="campo">Gravadora
+                        <input type="text" name="gravadora" placeholder="Gravadora" value="Atlantic Records">
+                    </label>
+
+                    <label class="campo">Formato
+                        <select name="formato" required>
+                            <option value="">Selecione o formato</option>
+                            <option value="LP 12 polegadas" selected>LP 12 polegadas</option>
+                            <option value="LP 7 polegadas">LP 7 polegadas</option>
+                            <option value="CD">CD</option>
+                            <option value="Fita cassete">Fita cassete</option>
+                        </select>
+                    </label>
+
+                    <label class="campo">Condição
+                        <select name="condicao" required>
+                            <option value="">Selecione a condição</option>
+                            <option value="Novo">Novo</option>
+                            <option value="Excelente estado">Excelente estado</option>
+                            <option value="Bom estado" selected>Bom estado</option>
+                            <option value="Regular">Regular</option>
+                        </select>
+                    </label>
+
+                    <label class="campo-total">Link para comprar álbum
+                        <input type="url" name="linkCompra" placeholder="https://" value="https://loja.exemplo.com/led-zeppelin-iv">
+                    </label>
+
+                    <label class="campo-total">Link para escutar
+                        <input type="url" name="linkSpotify" placeholder="https://" value="https://open.spotify.com/album/led-zeppelin-iv">
+                    </label>
+
+                    <label class="campo-total">Descrição
+                        <textarea name="descricao" placeholder="Conte um pouco sobre o álbum">Quarto álbum da banda, com faixas que se tornaram marcos do rock clássico.</textarea>
+                    </label>
+
+                </article>
+            </section>
+
+            <section class="cad-faixas">
+
+                <h3>Faixas</h3>
+
+                <div id="lista-faixas">
+
+                    <article class="faixa-linha">
+                        <span>01</span>
+                        <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da faixa" value="Black Dog">
+                        <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00" value="4:55">
+                        <button class="faixa-remover" type="button">✕</button>
+                    </article>
+
+                    <article class="faixa-linha">
+                        <span>02</span>
+                        <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da faixa" value="Rock and Roll">
+                        <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00" value="3:40">
+                        <button class="faixa-remover" type="button">✕</button>
+                    </article>
+
+                    <article class="faixa-linha">
+                        <span>03</span>
+                        <input class="faixa-nome" type="text" name="faixa[]" placeholder="Nome da faixa" value="The Battle of Evermore">
+                        <input class="faixa-tempo" type="text" name="duracao[]" placeholder="0:00" value="5:51">
+                        <button class="faixa-remover" type="button">✕</button>
+                    </article>
+
+                </div>
+
+                <button class="faixa-add" type="button">
+                    + Adicionar faixa
+                </button>
+
+            </section>
+
+            <article class="cad-botoes">
+
+                <a href="gerenciar_catalogo.html">
+                    <button class="button-contorno" type="button">Cancelar</button>
+                </a>
+
+                <button class="button-ama" type="submit" name="atualizar">
+                    Salvar alterações
+                </button>
+
+            </article>
+
+        </form>
+
+    </section>
+
+</body>
+</html>

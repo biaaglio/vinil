@@ -73,7 +73,7 @@ if (isset($_POST['cadastrar'])) {
         <article class="main-dispo">
             <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
             <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
-            <img class="icon" src="../assets/img/icons-usuário.png" alt="usuário">
+            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 

@@ -1036,7 +1036,7 @@ select{
     width: auto;
 }
 .faixa-linha .faixa-tempo{
-    width: 6.67vw;
+    width: 6.6vw;
 }
 .faixa-remover, .faixa-add{
     background: none;
@@ -1045,7 +1045,7 @@ select{
     cursor: pointer;
 }
 .faixa-remover{
-    font-size: 1.2vw;
+    font-size: 3vw;
     width: 2vw;
 }
 .faixa-add{
@@ -1136,16 +1136,10 @@ select{
 .tag-genero{
     display: inline-block;
     background-color: rgb(240, 250, 115);
-    color: rgb(21, 21, 21);
+    color: rgb(0, 0, 0);
     font-size: 0.8vw;
     font-weight: bold;
-    padding: 0.2vw 0.8vw;
     border-radius: 2vw;
-}
-.album-info h1{
-    color: rgb(235, 235, 235);
-    font-size: 2.4vw;
-    margin: 0.8vw 0 0.2vw 0;
 }
 .album-artista{
     color: rgb(250, 46, 35);
@@ -1534,4 +1528,385 @@ select{
 }
 .btn-curtir.curtido{
     color: rgb(250, 46, 35);
+}
+
+
+/* usuarios cadastrados */
+.all-usuarios{
+    margin: 2vw 9.2vw 3.33vw 9.2vw;
+}
+.cab-usuarios{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1vw;
+    margin: 0 0 1.5vw 0;
+}
+.titulo-usuarios{
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+.titulo-usuarios h1{
+    color: rgb(235, 235, 235);
+    font-size: 2.2vw;
+}
+.tag-total{
+    background-color: rgb(240, 250, 115);
+    color: rgb(21, 21, 21);
+    font-size: 0.8vw;
+    font-weight: bold;
+    padding: 0.2vw 0.8vw;
+    border-radius: 2vw;
+}
+#busca-usuario{
+    width: 20vw;
+    height: 3.5vw;
+    box-sizing: border-box;
+    background-color: rgb(38, 38, 38);
+    border: none;
+    border-radius: 0.67vw;
+    color: rgb(182, 182, 182);
+    font-size: 1vw;
+    padding: 0 1.33vw 0 3.33vw;
+    background-image: url(img/icons-pesquisar.png);
+    background-repeat: no-repeat;
+    background-size: 1.33vw;
+    background-position: 1.1vw center;
+}
+#busca-usuario::placeholder{
+    color: rgb(120, 120, 120);
+}
+.cab-tabela, .linha-usuario{
+    display: grid;
+    grid-template-columns: 2.3vw 1.3fr 1.8fr 1fr 1fr;
+    align-items: center;
+    gap: 1vw;
+    padding: 0 1.33vw;
+}
+.cab-tabela{
+    padding-bottom: 0.67vw;
+    color: rgb(120, 120, 120);
+    font-size: 0.93vw;
+}
+.linha-usuario{
+    padding-top: 1.1vw;
+    padding-bottom: 1.1vw;
+    border-radius: 0.67vw;
+    color: rgb(235, 235, 235);
+    font-size: 1.07vw;
+    transition: 0.5s ease-in-out;
+}
+.linha-usuario:nth-child(even){
+    background-color: rgb(30, 30, 30);
+}
+.linha-usuario:hover{
+    background-color: rgb(38, 38, 38);
+}
+.col-num{
+    color: rgb(250, 46, 35);
+}
+.col-cinza{
+    color: rgb(182, 182, 182);
+}
+.col-direita{
+    text-align: right;
+}
+
+
+
+/* gerenciar catalogo */
+.all-gerenciar{
+    margin: 2.67vw 5vw 3.33vw 5vw;
+}
+.cab-gerenciar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 1.33vw 0;
+}
+.titulo-gerenciar{
+    display: flex;
+    align-items: center;
+    gap: 1.33vw;
+}
+.titulo-gerenciar h1{
+    color: rgb(235, 235, 235);
+    font-size: 2.2vw;
+}
+.chip-itens{
+    background-color: rgb(240, 250, 115);
+    color: rgb(21, 21, 21);
+    padding: 0.3vw 1vw;
+    border-radius: 2vw;
+    font-size: 0.93vw;
+    font-weight: bold;
+}
+.acoes-gerenciar{
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+.acoes-gerenciar a{
+    text-decoration: none;
+}
+.busca-gerenciar{
+    background-color: rgb(38, 38, 38);
+    width: 19.5vw;
+    height: 3.2vw;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 1vw;
+    color: rgb(182, 182, 182);
+    font-size: 1.2vw;
+    padding: 0 1.33vw 0 3.4vw;
+    background-image: url(img/icons-pesquisar.png);
+    background-repeat: no-repeat;
+    background-size: 1.5vw;
+    background-position: 1vw center;
+}
+.busca-gerenciar::placeholder{
+    color: rgb(120, 120, 120);
+}
+.abas-gerenciar{
+    display: flex;
+    gap: 1vw;
+    margin: 0 0 1.67vw 0;
+}
+.aba{
+    padding: 0.67vw 2vw;
+    border: 0.1vw solid rgb(80, 80, 80);
+    border-radius: 2vw;
+    color: rgb(182, 182, 182);
+    font-size: 1.2vw;
+    text-decoration: none;
+    transition: 0.5s ease-in-out;
+}
+.aba:hover{
+    border-color: rgb(250, 46, 35);
+    color: rgb(250, 46, 35);
+}
+.aba-ativa{
+    background-color: rgb(250, 46, 35);
+    border-color: rgb(250, 46, 35);
+    color: rgb(21, 21, 21);
+    font-weight: bold;
+}
+.aba-ativa:hover{
+    color: rgb(21, 21, 21);
+}
+.tabela-cab, .linha-gerenciar{
+    display: grid;
+    grid-template-columns: 3vw 4.5vw 2.2fr 1.6fr 1fr 0.8fr 9vw;
+    align-items: center;
+    gap: 1vw;
+}
+.tabela-cab{
+    padding: 0 1.33vw 0.67vw 1.33vw;
+}
+.tabela-cab p{
+    color: rgb(120, 120, 120);
+    font-size: 1vw;
+}
+.linha-gerenciar{
+    padding: 0.67vw 1.33vw;
+    border-radius: 1vw;
+}
+.linha-gerenciar:nth-child(odd){
+    background-color: rgb(32, 32, 32);
+}
+.linha-gerenciar p{
+    color: rgb(182, 182, 182);
+    font-size: 1.2vw;
+}
+.linha-gerenciar h3{
+    color: rgb(235, 235, 235);
+    font-size: 1.2vw;
+    font-weight: normal;
+}
+.linha-gerenciar .num-linha{
+    color: rgb(250, 46, 35);
+}
+.linha-gerenciar img{
+    width: 3.4vw;
+    height: 3.4vw;
+    object-fit: cover;
+    border-radius: 0.67vw;
+}
+.botoes-linha{
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.67vw;
+}
+.botoes-linha a{
+    text-decoration: none;
+}
+.btn-acao{
+    background-color: rgb(38, 38, 38);
+    width: 3vw;
+    height: 3vw;
+    border: none;
+    border-radius: 0.8vw;
+    font-size: 1.2vw;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+.btn-editar{
+    color: rgb(182, 182, 182);
+}
+.btn-excluir{
+    color: rgb(250, 46, 35);
+}
+.btn-editar:hover{
+    background-color: rgb(240, 250, 115);
+    color: rgb(21, 21, 21);
+}
+.btn-excluir:hover{
+    background-color: rgb(250, 46, 35);
+    color: rgb(21, 21, 21);
+}
+
+
+/* editar album e artista */
+.cad-capa{
+    position: relative;
+    overflow: hidden;
+}
+.capa-atual{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.5s ease-in-out;
+}
+.cad-capa:hover .capa-atual{
+    opacity: 0.25;
+}
+
+
+/* novidades */
+.all-novidades{
+    margin: 2vw 9.2vw 3.33vw 9.2vw;
+}
+.all-novidades .titulo-curtidos{
+    margin: 0 0 1.2vw 0;
+}
+.secao-novi{
+    margin: 0 0 2.5vw 0;
+}
+.secao-novi .box-artis{
+    margin: 0;
+}
+.selo-novo{
+    position: absolute;
+    top: 0.8vw;
+    left: 0.8vw;
+    background-color: rgb(240, 250, 115);
+    color: rgb(21, 21, 21);
+    font-size: 0.8vw;
+    font-weight: bold;
+    padding: 0.2vw 0.8vw;
+    border-radius: 2vw;
+}
+.info-curtido p.data-cad{
+    color: rgb(120, 120, 120);
+    font-size: 0.93vw;
+    margin: 0.4vw 0 0 0;
+}
+
+
+/* perfil usuario */
+.all-perfil{
+    margin: 2vw 9.2vw 3.33vw 9.2vw;
+}
+.caminho-perfil{
+    color: rgb(120, 120, 120);
+    font-size: 1vw;
+    margin: 0 0 1.33vw 0;
+}
+.caminho-perfil a{
+    color: rgb(120, 120, 120);
+    text-decoration: none;
+}
+.caminho-perfil a:hover{
+    color: rgb(250, 46, 35);
+    transition: 0.5s ease-in-out;
+}
+.caminho-perfil a.atual{
+    color: rgb(250, 46, 35);
+}
+.all-perfil .perfil-artis{
+    padding: 2vw 2.67vw;
+    margin: 0 0 1.33vw 0;
+}
+.info-perfil{
+    display: flex;
+    align-items: center;
+    gap: 2.67vw;
+}
+.avatar-perfil{
+    width: 7.5vw;
+    height: 7.5vw;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(21, 21, 21);
+    border: 0.2vw solid rgb(250, 46, 35);
+    border-radius: 50%;
+    color: rgb(235, 235, 235);
+    font-size: 2.4vw;
+    font-weight: bold;
+}
+.info-perfil h1{
+    font-size: 2.2vw;
+}
+.info-perfil p{
+    font-size: 1.1vw;
+}
+.info-perfil .tag-genero{
+    color: rgb(21, 21, 21);
+    font-size: 0.93vw;
+    padding: 0.33vw 1vw;
+    margin: 0.2vw 0 0 0;
+}
+.dados-perfil{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1vw;
+    margin: 0 0 2vw 0;
+}
+.dado-perfil{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1vw;
+    background-color: rgb(30, 30, 30);
+    border-radius: 0.67vw;
+    padding: 1.33vw 1.67vw;
+}
+.dado-perfil p{
+    color: rgb(120, 120, 120);
+    font-size: 1vw;
+}
+.dado-perfil h3{
+    color: rgb(235, 235, 235);
+    font-size: 1.07vw;
+    font-weight: normal;
+}
+.acoes-perfil{
+    display: flex;
+    gap: 1vw;
+}
+.acoes-perfil a{
+    text-decoration: none;
+}
+.acoes-perfil button{
+    padding: 0.8vw 2vw;
+    border-radius: 1vw;
+    font-size: 1vw;
+    cursor: pointer;
 }

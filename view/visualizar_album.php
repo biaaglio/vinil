@@ -26,8 +26,8 @@
 
         <article class="main-dispo">
             <img class="icon" src="../assets/img/icons-pesquisar.png" alt="pesquisar">
-            <img class="icon" src="../assets/img/icons-gostar.png" alt="gostei">
-            <img class="icon" src="../assets/img/icons-usuário.png" alt="usuário">
+            <a href="../view/curtidos_usuario.html"><img class="icon" src="../assets/img/icons-gostar.png" alt="gostei"></a>
+            <a href="../view/perfil_usuario.html"><img class="icon" src="../assets/img/icons-usuário.png" alt="usuário"></a>
         </article>
     </main>
 
